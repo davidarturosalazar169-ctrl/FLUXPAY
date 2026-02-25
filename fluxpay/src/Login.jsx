@@ -1,30 +1,58 @@
+import { useNavigate } from "react-router-dom";
 import "./styles.css";
 
-
 export default function Login() {
+  const navigate = useNavigate();
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    alert("Inicio de sesión");
+  };
+
   return (
     <div className="page">
+      
       <div className="side-bar">
-        <div className="logo">RunPay</div>
+        <div className="logo-container">
+          <img 
+            src="/fluxpay.jpg" 
+            alt="FluxPay Logo" 
+            className="logo-img" 
+          />
+        </div>
       </div>
 
       <div className="content">
-        <h1 className="title">INICIAR SESION</h1>
+        <div className="content-wrapper">
+          <h1 className="title">INICIAR SESIÓN</h1>
 
-        <div className="card-login">
-          <input type="text" placeholder="Email" className="input" />
-          <input type="password" placeholder="Password" className="input" />
+          <form className="card-login" onSubmit={handleLogin}>
+            <input 
+              type="email" 
+              placeholder="Email" 
+              className="input"
+              required
+            />
 
-          <button className="btn-primary">Sign in</button>
-          <button className="btn-secondary">Register</button>
+            <input 
+              type="password" 
+              placeholder="Password" 
+              className="input"
+              required
+            />
 
-          <div className="social">
-            <button className="social-btn">G</button>
-            <button className="social-btn">F</button>
-            <button className="social-btn">X</button>
-          </div>
+            <button type="submit" className="btn-primary">
+              Iniciar sesión
+            </button>
 
-          <button className="btn-guest">Invitado</button>
+            <button 
+              type="button"
+              className="btn-secondary"
+              onClick={() => navigate("/register")}
+            >
+              Registrate
+            </button>
+          </form>
         </div>
       </div>
     </div>

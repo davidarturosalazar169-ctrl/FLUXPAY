@@ -1,0 +1,181 @@
+/* =========================
+   RESET GLOBAL
+========================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+/* =========================
+   CONTENEDOR PRINCIPAL
+========================= */
+.page {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+}
+
+/* =========================
+   BARRA LATERAL
+========================= */
+.side-bar {
+  width: 280px;
+  background: linear-gradient(180deg, #0d2b5c, #0a1f44);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+.logo-container {
+  text-align: center;
+}
+
+.logo-img {
+  width: 180px;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+/* =========================
+   CONTENIDO
+========================= */
+.content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.content-wrapper {
+  text-align: center;
+}
+
+/* =========================
+   TITULO
+========================= */
+.title {
+  font-size: 42px;
+  font-weight: 800;
+  color: #0d2b5c;
+  margin-bottom: 40px;
+  letter-spacing: 1px;
+}
+
+/* =========================
+   CARD LOGIN
+========================= */
+.card-login {
+  width: 380px;
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+/* =========================
+   INPUTS
+========================= */
+.input {
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #1e3a8a;
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
+}
+
+/* =========================
+   BOTONES
+========================= */
+.btn-primary {
+  background-color: #1e3a8a;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background-color: #e2e8f0;
+  color: #0f172a;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #cbd5e1;
+  transform: translateY(-2px);
+}
+
+/* =========================
+   ANIMACION
+========================= */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 900px) {
+
+  .page {
+    flex-direction: column;
+  }
+
+  .side-bar {
+    width: 100%;
+    height: 200px;
+  }
+
+  .logo-img {
+    width: 140px;
+  }
+
+  .card-login {
+    width: 90%;
+  }
+
+  .title {
+    font-size: 32px;
+  }
+}
