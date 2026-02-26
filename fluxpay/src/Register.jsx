@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import "./styles.css";
+import "./register.css";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -10,76 +10,42 @@ export default function Register() {
   };
 
   return (
-    <div className="page">
+    <div className="register-page">
 
-      {/* SIDEBAR CON LOGO */}
-      <div className="side-bar">
-        <div className="logo-container">
+      <div className="register-sidebar">
+        <div className="register-logo-container">
           <img 
             src="/fluxpay.jpg" 
             alt="FluxPay Logo" 
-            className="logo-img" 
+            className="register-logo" 
           />
         </div>
       </div>
 
-      {/* CONTENIDO */}
-      <div className="content">
-        <h1 className="title">REGISTRARSE</h1>
+      <div className="register-content">
+        <h1 className="register-title">REGISTRARSE</h1>
 
-        <form className="card-register" onSubmit={handleRegister}>
+        <form className="register-card" onSubmit={handleRegister}>
 
-          <div className="form-grid">
-            <input 
-              type="email" 
-              placeholder="Correo" 
-              className="input"
-              required
-            />
+          <div className="register-grid">
 
-            <input 
-              type="text" 
-              placeholder="Nombre" 
-              className="input"
-              required
-            />
+            <input type="email" placeholder="Correo" className="register-input" required />
+            <input type="text" placeholder="Nombre" className="register-input" required />
+            <input type="password" placeholder="Contraseña" className="register-input" required />
+            <input type="text" placeholder="Banco" className="register-input" required />
+            <input type="text" placeholder="Nombre negocio" className="register-input" />
+            <input type="text" placeholder="Cuenta bancaria" className="register-input" />
 
-            <input 
-              type="password" 
-              placeholder="Contraseña" 
-              className="input"
-              required
-            />
-
-            <input 
-              type="text" 
-              placeholder="Banco" 
-              className="input"
-              required
-            />
-
-            <input 
-              type="text" 
-              placeholder="Nombre negocio" 
-              className="input"
-            />
-
-            <input 
-              type="text" 
-              placeholder="Cuenta bancaria" 
-              className="input"
-            />
           </div>
 
-          <button type="submit" className="btn-primary large">
+          <button type="submit" className="register-btn-primary">
             Crear Cuenta
           </button>
 
           <button 
             type="button"
-            className="btn-secondary"
-            onClick={() => navigate("/")}
-          >
+            className="register-btn-secondary"
+            onClick={() => navigate("/")}>
             Volver al Login
           </button>
 
