@@ -5,9 +5,11 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleLogin = (e) => {
-    e.preventDefault();
-    alert("Inicio de sesión");
-  };
+  e.preventDefault();
+
+  // Simulación de administrador
+  navigate("/admin/dashboard");
+};
 
   return (
     <div className="login-page">
@@ -63,7 +65,7 @@ export default function Login() {
         </div> {/* login-wrapper */}
 
       </div> {/* login-content */}
-
+-m
     </div> /* login-page */
   );
 }
