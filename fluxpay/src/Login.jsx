@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import "./styles.css";
+import "./login.css";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -10,51 +10,60 @@ export default function Login() {
   };
 
   return (
-    <div className="page">
+    <div className="login-page">
       
-      <div className="side-bar">
-        <div className="logo-container">
+      {/* SIDEBAR */}
+      <div className="login-sidebar">
+        <div className="login-logo-container">
           <img 
             src="/fluxpay.jpg" 
             alt="FluxPay Logo" 
-            className="logo-img" 
+            className="login-logo" 
           />
         </div>
       </div>
 
-      <div className="content">
-        <div className="content-wrapper">
-          <h1 className="title">INICIAR SESIÓN</h1>
+      {/* CONTENIDO */}
+      <div className="login-content">
+        
+        <div className="login-wrapper">
+          
+          <h1 className="login-title">INICIAR SESIÓN</h1>
 
-          <form className="card-login" onSubmit={handleLogin}>
+          <form className="login-card" onSubmit={handleLogin}>
+            
             <input 
               type="email" 
               placeholder="Email" 
-              className="input"
+              className="login-input"
               required
             />
 
             <input 
               type="password" 
               placeholder="Password" 
-              className="input"
+              className="login-input"
               required
             />
 
-            <button type="submit" className="btn-primary">
+            <button type="submit" className="login-btn-primary">
               Iniciar sesión
             </button>
 
             <button 
               type="button"
-              className="btn-secondary"
+              className="login-btn-secondary"
               onClick={() => navigate("/register")}
             >
               Registrate
             </button>
+
           </form>
-        </div>
-      </div>
-    </div>
+
+        </div> {/* login-wrapper */}
+
+      </div> {/* login-content */}
+
+    </div> /* login-page */
   );
 }
