@@ -1,45 +1,88 @@
 /* =========================
-   SIDEBAR ESTILO LOGIN
+   LAYOUT GENERAL
 ========================= */
 
 .admin-layout {
   display: flex;
   min-height: 100vh;
-}
-
-/* SIDEBAR */
-.admin-sidebar {
-  width: 340px;
-  background: #102c57; /* azul sólido como en la imagen */
-  display: flex;
-  justify-content: flex-start; /* arriba */
-  align-items: center; /* centrado horizontal */
-  padding-top: 80px; /* separación arriba */
-}
-
-/* CONTENEDOR LOGO */
-.admin-logo-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-/* LOGO */
-.admin-logo {
-  width: 260px;
-  border-radius: 35px; /* bordes redondeados como imagen */
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  font-family: Arial, sans-serif;
 }
 
 /* =========================
-   CONTENIDO DASHBOARD
+   SIDEBAR
 ========================= */
+
+.admin-sidebar {
+  width: 260px;
+  background: #102c57;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 30px 0;
+}
+
+.admin-logo-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.admin-logo {
+  width: 180px;
+  border-radius: 20px;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0 20px;
+}
+
+.sidebar-menu li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 15px;
+}
+
+.sidebar-menu li:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.sidebar-menu .active {
+  background: rgba(255,255,255,0.2);
+}
+
+.logout {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 20px;
+  cursor: pointer;
+  border-top: 1px solid rgba(255,255,255,0.2);
+}
+
+.logout:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+/* =========================
+   MAIN CONTENT
+========================= */
+
+.admin-main {
+  flex: 1;
+  background: #f4f7fb;
+  display: flex;
+  flex-direction: column;
+}
 
 .admin-dashboard {
   padding: 30px;
-  background-color: #f4f7fb;
-  min-height: 100vh;
-  flex: 1;
 }
 
 .admin-title {
@@ -49,7 +92,7 @@
   color: #1a2b49;
 }
 
-/* METRICAS */
+/* MÉTRICAS */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -61,7 +104,7 @@
   background: white;
   padding: 20px;
   border-radius: 15px;
-  box-shadow: 0px 6px 15px rgba(0,0,0,0.08);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.08);
 }
 
 .stat-card h4 {
@@ -95,7 +138,7 @@
   background: white;
   padding: 20px;
   border-radius: 15px;
-  box-shadow: 0px 6px 15px rgba(0,0,0,0.08);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.08);
 }
 
 .chart-placeholder {
@@ -116,8 +159,8 @@
 
 .recent-business li {
   display: flex;
-  flex-direction: column;
-  margin-bottom: 15px;
+  justify-content: space-between;
+  margin-bottom: 12px;
 }
 
 .recent-business span {
@@ -125,7 +168,7 @@
   color: #7a8ca5;
 }
 
-/* SECCIÓN INFERIOR */
+/* ACCIONES */
 .bottom-section {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -137,7 +180,7 @@
   background: white;
   padding: 20px;
   border-radius: 15px;
-  box-shadow: 0px 6px 15px rgba(0,0,0,0.08);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.08);
 }
 
 .actions {
@@ -175,7 +218,7 @@
   background: white;
   padding: 15px;
   border-radius: 20px;
-  box-shadow: 0px 4px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
   text-align: center;
   font-weight: 500;
   color: #1a2b49;

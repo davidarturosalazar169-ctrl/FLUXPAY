@@ -1,19 +1,64 @@
 import "./DashboardAdmin.css";
 import Navbar from "../Navbar";
+import { 
+  FaHome, 
+  FaStore, 
+  FaChartBar, 
+  FaHeadset, 
+  FaSignOutAlt 
+} from "react-icons/fa";
 
 export default function DashboardAdmin() {
   return (
-    <div className="page">
+    <div className="admin-layout">
 
       {/* SIDEBAR */}
-      <div className="side-bar">
-        <div className="logo-container">
-          <img 
-            src="/fluxpay.jpg" 
-            alt="FluxPay Logo" 
-            className="logo-img" 
-          />
+      <div className="admin-sidebar">
+
+        <div className="sidebar-content">
+
+          {/* LOGO */}
+          <div className="admin-logo-container">
+            <img 
+              src="/fluxpay.jpg" 
+              alt="FluxPay Logo" 
+              className="admin-logo" 
+            />
+          </div>
+
+          {/* MENÚ */}
+          <ul className="sidebar-menu">
+
+            <li className="active">
+              <FaHome className="icon" />
+              <span>Dashboard</span>
+            </li>
+
+            <li>
+              <FaStore className="icon" />
+              <span>Gestión Negocios</span>
+            </li>
+
+            <li>
+              <FaChartBar className="icon" />
+              <span>Reportes Globales</span>
+            </li>
+
+            <li>
+              <FaHeadset className="icon" />
+              <span>Soporte</span>
+            </li>
+
+          </ul>
+
+          {/* CERRAR SESIÓN */}
+          <div className="logout">
+            <FaSignOutAlt className="icon" />
+            <span>Cerrar sesión</span>
+          </div>
+
         </div>
+
       </div>
 
       {/* MAIN */}
@@ -29,7 +74,7 @@ export default function DashboardAdmin() {
 
           <h1 className="admin-title">Dashboard Administrador</h1>
 
-          {/* MÉTRICAS SUPERIORES */}
+          {/* MÉTRICAS */}
           <div className="stats-grid">
             <div className="stat-card">
               <h4>Ventas de hoy</h4>
@@ -107,7 +152,7 @@ export default function DashboardAdmin() {
 
           </div>
 
-          {/* REPORTES GLOBALES */}
+          {/* REPORTES */}
           <div className="reports">
             <div className="report-item">
               👥 245 Negocios registrados
