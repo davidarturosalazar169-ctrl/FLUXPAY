@@ -1,69 +1,43 @@
 import "./DashboardAdmin.css";
 import Navbar from "../Navbar";
-import { 
-  FaHome, 
-  FaStore, 
-  FaChartBar, 
-  FaHeadset, 
-  FaSignOutAlt 
+import {
+  FaHome,
+  FaStore,
+  FaChartBar,
+  FaHeadset,
+  FaSignOutAlt,
 } from "react-icons/fa";
 
 export default function DashboardAdmin() {
   return (
     <div className="admin-layout">
-
+      
       {/* SIDEBAR */}
-      <div className="admin-sidebar">
+      <aside className="admin-sidebar">
 
-        <div className="sidebar-content">
+  <div className="sidebar-top">
+    <div className="admin-logo-container">
+      <img src="/fluxpay.jpg" alt="FluxPay Logo" className="admin-logo" />
+    </div>
 
-          {/* LOGO */}
-          <div className="admin-logo-container">
-            <img 
-              src="/fluxpay.jpg" 
-              alt="FluxPay Logo" 
-              className="admin-logo" 
-            />
-          </div>
+    <ul className="sidebar-menu">
+      <li className="active"><FaHome /> <span>Dashboard</span></li>
+      <li><FaStore /> <span>Gestión Negocios</span></li>
+      <li><FaChartBar /> <span>Reportes globales</span></li>
+      <li><FaHeadset /> <span>Soporte</span></li>
+    </ul>
+  </div>
 
-          {/* MENÚ */}
-          <ul className="sidebar-menu">
+  <div className="logout">
+    <FaSignOutAlt />
+    <span>Cerrar sesión</span>
+  </div>
 
-            <li className="active">
-              <FaHome className="icon" />
-              <span>Dashboard</span>
-            </li>
+</aside>
 
-            <li>
-              <FaStore className="icon" />
-              <span>Gestión Negocios</span>
-            </li>
-
-            <li>
-              <FaChartBar className="icon" />
-              <span>Reportes Globales</span>
-            </li>
-
-            <li>
-              <FaHeadset className="icon" />
-              <span>Soporte</span>
-            </li>
-
-          </ul>
-
-          {/* CERRAR SESIÓN */}
-          <div className="logout">
-            <FaSignOutAlt className="icon" />
-            <span>Cerrar sesión</span>
-          </div>
-
-        </div>
-
-      </div>
-
-      {/* MAIN */}
-      <div className="main-content">
-
+      {/* CONTENIDO */}
+      <div className="admin-main">
+        
         <Navbar
           nombre={"Alexander Castillo"}
           correo={"Alexander.Correo@Gmail"}
@@ -97,43 +71,26 @@ export default function DashboardAdmin() {
             </div>
           </div>
 
-          {/* SECCIÓN CENTRAL */}
+          {/* CENTRO */}
           <div className="middle-section">
-
             <div className="chart-box">
               <h3>Estadísticas recientes</h3>
-              <div className="chart-placeholder">
-                📊 Gráfica aquí
-              </div>
+              <div className="chart-placeholder">📊 Gráfica aquí</div>
             </div>
 
             <div className="recent-business">
               <h3>Negocios recientes</h3>
               <ul>
-                <li>
-                  <strong>Café el roble</strong>
-                  <span>12 ventas • $3,200</span>
-                </li>
-                <li>
-                  <strong>Moda Express</strong>
-                  <span>8 ventas • $2,150</span>
-                </li>
-                <li>
-                  <strong>Tienda Luna</strong>
-                  <span>5 ventas • $1,100</span>
-                </li>
-                <li>
-                  <strong>Tech Solutions</strong>
-                  <span>15 ventas • $4,500</span>
-                </li>
+                <li><strong>Café el roble</strong><span>12 ventas • $3,200</span></li>
+                <li><strong>Moda Express</strong><span>8 ventas • $2,150</span></li>
+                <li><strong>Tienda Luna</strong><span>5 ventas • $1,100</span></li>
+                <li><strong>Tech Solutions</strong><span>15 ventas • $4,500</span></li>
               </ul>
             </div>
-
           </div>
 
-          {/* SECCIÓN INFERIOR */}
+          {/* ACCIONES */}
           <div className="bottom-section">
-
             <div className="action-card">
               <h3>Gestión de Negocios</h3>
               <div className="actions">
@@ -149,24 +106,16 @@ export default function DashboardAdmin() {
                 <button className="btn-dark">Nuevo ticket</button>
               </div>
             </div>
-
           </div>
 
           {/* REPORTES */}
           <div className="reports">
-            <div className="report-item">
-              👥 245 Negocios registrados
-            </div>
-            <div className="report-item">
-              📈 8,450 Transacciones totales
-            </div>
-            <div className="report-item">
-              💲 $324,500 Ingresos totales
-            </div>
+            <div className="report-item">👥 245 Negocios registrados</div>
+            <div className="report-item">📈 8,450 Transacciones totales</div>
+            <div className="report-item">💲 $324,500 Ingresos totales</div>
           </div>
 
         </div>
-
       </div>
     </div>
   );
