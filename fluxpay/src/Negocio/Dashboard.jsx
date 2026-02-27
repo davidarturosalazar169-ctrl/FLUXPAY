@@ -8,7 +8,7 @@ export default function Dashboard() {
       {/* SIDEBAR */}
       <aside className="sidebar">
         <div className="logo">FluxPay</div>
-
+      
         <nav>
           <ul>
             <li className="active">Dashboard</li>
