@@ -1,62 +1,49 @@
 import React from "react";
-import "./Dashboard.css";
+import { FaChartLine, FaBox } from "react-icons/fa";
 
-export default function Dashboard() {
+export default function DashboardNegocio() {
+  const inventoryData = [
+    { id: 1, name: "Galletas", units: 10, income: "$1912" },
+    { id: 2, name: "Sabritas", units: 12, income: "$1121" },
+    { id: 3, name: "Refrescos", units: 6, income: "$871" },
+    { id: 4, name: "Golosinas", units: 33, income: "$119" },
+  ];
+
   return (
-    <div className="layout">
-      
-      {/* SIDEBAR */}
-      <aside className="sidebar">
-        <div className="logo">FluxPay</div>
-      
-        <nav>
-          <ul>
-            <li className="active">Dashboard</li>
-            <li>Cobrar</li>
-            <li>QR</li>
-            <li>Historial</li>
-            <li>Productos</li>
-            <li>Clientes</li>
-            <li>Cuenta/Banco</li>
-            <li>Reportes</li>
-            <li>Configuración</li>
-          </ul>
-        </nav>
+    <section className="admin-dashboard">
+      <h2 className="admin-title">Dashboard</h2>
+      <p className="welcome-text">Bienvenido Negocio</p>
 
-        <button className="logout">Cerrar sesión</button>
-      </aside>
-
-      {/* MAIN */}
-      <main className="main">
-        <header className="header">
-          <h2>Dashboard</h2>
-          <div className="user">
-            <span>José Aguilar</span>
-          </div>
-        </header>
-
-        {/* CARDS */}
-        <section className="cards">
-          <div className="card">
+      {/* STATS CARDS */}
+      <div className="stats-grid">
+        <div className="stat-card">
+          <div className="card-header">
             <h4>Ingresos efectivo</h4>
-            <p>$50,000.000</p>
+            <FaChartLine className="chart-icon" />
           </div>
-
-          <div className="card">
-            <h4>Ingresos QR</h4>
-            <p>$8,200.000</p>
+          <p className="amount">$50000.000</p>
+        </div>
+        <div className="stat-card">
+          <div className="card-header">
+            <h4>Ingresos en QR</h4>
+            <FaChartLine className="chart-icon" />
           </div>
-
-          <div className="card">
+          <p className="amount">$8200.000</p>
+        </div>
+        <div className="stat-card">
+          <div className="card-header">
             <h4>Pagos recibidos</h4>
-            <p>$500.000</p>
+            <FaChartLine className="chart-icon" />
           </div>
-        </section>
+          <p className="amount">$500.000</p>
+        </div>
+      </div>
 
-        {/* INVENTARIO */}
-        <section className="inventory">
-          <h3>Inventario</h3>
-          <table>
+      {/* INVENTORY */}
+      <div className="inventory-section">
+        <h3 className="section-subtitle">Inventario</h3>
+        <div className="inventory-container">
+          <table className="inventory-table">
             <thead>
               <tr>
                 <th>Producto</th>
@@ -65,31 +52,34 @@ export default function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Galletas</td>
-                <td>10</td>
-                <td>$1912</td>
-              </tr>
-              <tr>
-                <td>Sabritas</td>
-                <td>12</td>
-                <td>$1121</td>
-              </tr>
-              <tr>
-                <td>Refrescos</td>
-                <td>6</td>
-                <td>$871</td>
-              </tr>
-              <tr>
-                <td>Golosinas</td>
-                <td>33</td>
-                <td>$119</td>
-              </tr>
+              {inventoryData.map((item) => (
+                <tr key={item.id}>
+                  <td className="product-cell">
+                    <FaBox className="prod-img" />
+                    {item.name}
+                  </td>
+                  <td>{item.units}</td>
+                  <td className="income-text">{item.income}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
-        </section>
 
-      </main>
-    </div>
+          <div className="category-chart">
+            <p className="chart-title">Ventas por categoría</p>
+            <div className="bars-comparison">
+              <div className="bar-group">
+                <div className="bar color-1" style={{ height: "80%" }}></div>
+                <div className="bar color-2" style={{ height: "50%" }}></div>
+              </div>
+            </div>
+            <div className="chart-legend">
+              <span><span className="dot d1"></span> Efectivo</span>
+              <span><span className="dot d2"></span> QR</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }

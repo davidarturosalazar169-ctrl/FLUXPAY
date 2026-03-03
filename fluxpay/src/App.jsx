@@ -10,8 +10,9 @@ import GestionNegocios from "./Administrador/GestionNegocios";
 import AgregarNegocio from "./Administrador/AgregarNegocio";
 import DetalleNegocio from "./Administrador/DetalleNegocio";
 
-
-
+import ProductosNegocio from "./Negocio/Productos"; 
+import LayoutNegocio from "./Negocio/LayoutNegocio";
+import HistorialNegocio from './Negocio/Historial'; // Esta nueva vista
 function App() {
  
   return (
@@ -30,6 +31,15 @@ function App() {
       <Route path="/admin/negocios" element={<GestionNegocios />} />
       <Route path="/admin/agregar" element={<AgregarNegocio />} />
       <Route path="/admin/negocio/:id" element={<DetalleNegocio />} />
+  
+      {/* RUTAS DE NEGOCIO (Correctas) */}
+      <Route path="/Negocio" element={<LayoutNegocio />}>
+        {/* Usamos index para que /Negocio cargue el Dashboard por defecto */}
+        <Route index element={<DashboardNegocio />} />
+        <Route path="Dashboard" element={<DashboardNegocio />} />
+        <Route path="Productos" element={<ProductosNegocio />} />
+        <Route path="Historial" element={<HistorialNegocio />} />
+      </Route>
 
     </Routes>
   );

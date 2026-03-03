@@ -1,0 +1,439 @@
+/* =========================
+   LAYOUT & COLORS
+========================= */
+:root {
+  --sidebar-bg: #0e2a5a;
+  --main-bg: #f4f7fb;
+  --text-dark: #1a2b49;
+  --text-light: #7a8ca5;
+  --white: #ffffff;
+  --accent-blue: #3b82f6;
+}
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: var(--main-bg);
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+.admin-sidebar {
+  width: 260px;
+  background: var(--sidebar-bg);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 30px 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.admin-logo-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+.logo-box {
+  width: 180px;
+  height: 90px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 6px 15px rgba(0,0,0,0.08);
+}
+.inventory-table td {
+  color: #102c57; /* 🔥 Mismo azul del sidebar */
+  font-weight: 500;
+}
+.user-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+/* Header de la vista */
+.header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.btn-add-product {
+  background: var(--sidebar-bg);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Tabla expandida */
+.full-width-table {
+  grid-template-columns: 1fr !important;
+}
+
+.product-cell-large {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  padding: 15px 0;
+}
+
+.product-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f0f0f0;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.product-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.units-blue {
+  color: var(--accent-blue);
+  font-weight: bold;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* El contenedor principal NO debe tener overflow: hidden */
+.user-avatar-container {
+  position: relative; /* Clave para el punto verde */
+  width: 45px;
+  height: 45px;
+}
+
+/* La caja de la imagen SÍ lleva el recorte circular */
+.user-avatar-img-wrapper {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden; /* Corta la foto en círculo */
+  border: 1px solid #e2e8f0;
+}
+
+.user-avatar-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* El punto verde (La "bola") */
+.online-indicator {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  background-color: #10b981; /* Verde brillante */
+  border: 2px solid #ffffff; /* El borde blanco que lo separa de la foto */
+  border-radius: 50%;
+  z-index: 10; /* Asegura que esté al frente */
+}
+.logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* =========================
+   SIDEBAR MENU ADAPTADO
+========================= */
+.sidebar-menu {
+  list-style: none;
+  padding: 0; /* Quitamos padding lateral para que el borde active llegue al extremo */
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* Estilo base para los links y los items estáticos */
+.sidebar-menu li a, 
+.sidebar-menu li.menu-item-static {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 25px; /* Padding ajustado */
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+  cursor: pointer;
+}
+
+/* Efecto Hover */
+.sidebar-menu li a:hover,
+.sidebar-menu li.menu-item-static:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  transform: translateX(4px);
+}
+
+/* Estado ACTIVO (NavLink de React Router lo detecta solo) */
+.sidebar-menu li a.active {
+  background: rgba(255, 255, 255, 0.12); /* Un toque de luz al fondo */
+  color: white;
+  font-weight: 600;
+  border-left: 4px solid var(--white); /* La línea blanca que pediste */
+}
+
+/* Ajuste para los iconos dentro del menú */
+.sidebar-menu li svg {
+  font-size: 18px;
+  min-width: 20px;
+}
+
+/* Logout con hover */
+.logout {
+  padding: 20px 25px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: 0.3s;
+}
+
+.logout:hover {
+  color: #ff4d4d; /* Color rojizo suave al salir */
+  background: rgba(255, 0, 0, 0.05);
+}
+
+.logout {
+  padding: 20px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  cursor: pointer;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* =========================
+   MAIN & HEADER
+========================= */
+.admin-main {
+  flex: 1;
+  padding: 20px 40px;
+}
+
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.date-filter select {
+  padding: 8px 15px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: white;
+  color: var(--text-light);
+  outline: none;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-info {
+  text-align: right;
+}
+
+.user-name {
+  display: block;
+  font-weight: bold;
+  font-size: 14px;
+  color: var(--text-dark);
+}
+
+.user-email {
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  background: #ccc;
+  border-radius: 50%;
+  background-image: url('https://via.placeholder.com/40'); /* Reemplazar con foto real */
+  background-size: cover;
+}
+
+/* =========================
+   CARDS & STATS
+========================= */
+.welcome-text {
+  color: #a0aec0;
+  margin-top: -25px;
+  margin-bottom: 30px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  background: white;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+  position: relative;
+}
+
+.blue-border {
+  border: 2px solid var(--accent-blue);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-light);
+  margin-bottom: 10px;
+}
+
+.stat-card h4 {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.amount {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+/* =========================
+   INVENTORY TABLE
+========================= */
+.inventory-container {
+  background: white;
+  padding: 30px;
+  border-radius: 25px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 40px;
+}
+
+.section-subtitle {
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+  color: var(--text-dark);
+}
+
+.inventory-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.inventory-table th {
+  text-align: left;
+  color: var(--sidebar-bg);
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.inventory-table td {
+  padding: 15px 0;
+  border-bottom: 1px solid #f9f9f9;
+  font-size: 14px;
+}
+
+.product-cell {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  color: var(--accent-blue);
+  font-weight: 500;
+}
+
+.income-text {
+  color: var(--accent-blue);
+}
+
+/* Chart visual simulation */
+.category-chart {
+  border-left: 1px solid #eee;
+  padding-left: 40px;
+}
+
+.chart-title {
+  font-size: 14px;
+  color: var(--sidebar-bg);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.bars-comparison {
+  height: 150px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.bar-group {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  height: 100%;
+}
+
+.bar {
+  width: 30px;
+  border-radius: 4px;
+}
+
+.color-1 { background: #bedffa; } /* Celeste claro */
+.color-2 { background: #1a2b49; } /* Azul oscuro */
+
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 12px;
+}
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 5px;
+}
+
+.d1 { background: #1a2b49; }
+.d2 { background: #bedffa; }
+
