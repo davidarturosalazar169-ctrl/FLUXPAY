@@ -1,0 +1,73 @@
+.hover-icon {
+  transition: 0.3s ease;
+  cursor: pointer;
+}
+
+.hover-icon:hover {
+  transform: scale(1.2);
+  color: #0d6efd;
+}
+
+.logo-img {
+  width: 120px;
+}
+
+/* Tarjetas modernas */
+.dashboard-card {
+  border: none;
+  border-radius: 20px;
+  padding: 30px 20px;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  background: white;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+}
+
+/* Icono circular */
+.dashboard-icon {
+  width: 80px;
+  height: 80px;
+  margin: auto;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Gradiente azul */
+.cuenta-card {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: white;
+}
+
+.cuenta-card .text-muted {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.cuenta-card .dashboard-icon {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Gradiente verde */
+.historial-card {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  color: white;
+}
+
+.historial-card .text-muted {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.historial-card .dashboard-icon {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Título Dashboard */
+.container h1 {
+  font-weight: 700;
+  margin-bottom: 20px;
+}

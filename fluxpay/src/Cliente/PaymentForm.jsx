@@ -30,7 +30,6 @@ const PaymentForm = ({ show, handleCerrar, handlesave }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // 🔥 FORZAMOS QUE SE GUARDE MOSTRANDO EL FRENTE
     handlesave({
       ...state,
       focus: "number",

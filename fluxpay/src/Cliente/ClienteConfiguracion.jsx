@@ -1,102 +1,258 @@
-import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
-import { FaUserCircle, FaCcVisa, FaCcMastercard } from "react-icons/fa";
+import { Container, Row, Col, Card, Button, Form, Image } from "react-bootstrap";
+import {FaCcVisa,FaCcMastercard,FaEnvelope,FaPhoneAlt,FaLock,FaCamera} from "react-icons/fa";
 import { SiMercadopago } from "react-icons/si";
 import Navbar from "../Navbar";
+import ClientDataForm from "./ClientDataForm";
+import ChangeEmailModal from "./ChangeEmailModal";
+import ChangePasswordModal from "./ChangePasswordModal";
+import ChangePhotoModal from "./ChangePhotoModal";
+import { useState } from "react";
+import "../Administrador/DashboardAdmin.css";
+import { useNavigate } from "react-router-dom";
+
+import {FaHome,FaStore,FaChartBar,FaHeadset,FaSignOutAlt,FaSearch,FaBell,FaDollarSign,FaShoppingCart,FaUsers,FaHistory,FaCog, } from "react-icons/fa";
+import { CiCreditCard1 } from "react-icons/ci";
+
+
+// Imagen local
+import FotoPerfil from "./FotoPerfil.png";
 
 function ClienteConfiguracion() {
+
+  const navigate = useNavigate();
+
+  const [user, setUser] = useState({
+    nombre: "José Aguilar",
+    correo: "joseagui@gmail.com",
+    telefono: "+52 893 223 92",
+    password: "123456",
+    foto: FotoPerfil
+  });
+
+  const [activeModal, setActiveModal] = useState(null);
+
+  const updateField = (field, value) => {
+    setUser((prev) => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
   return (
-    <div className="page d-flex">
-      {/* Sidebar */}
-      <div className="side-bar">
-        <div className="logo-container">
-          <img src="/fluxpay.jpg" alt="FluxPay Logo" className="logo-img" />
-        </div>
-      </div>
+    <div className="page d-flex bg-light">
 
-      {/* Main */}
-      <div className="main-content flex-grow-1">
-        <Navbar
-          nombre="Alexander Castillo"
-          correo="Alexander.Correo@Gmail.com"
-          rol="Cliente"
-        />
+<aside className="admin-sidebar">
+  <div>
+    <div className="admin-logo-container">
+      <img src="/fluxpay.jpg" alt="FluxPay Logo" className="admin-logo" />
+    </div>
 
-        <Container className="mt-4">
-          <h2 className="fw-bold mb-4">Configuración</h2>
+    <ul className="sidebar-menu">
+      
+      <li 
+        className="active"
+        onClick={() => navigate("/dashboard")} 
+        style={{ cursor: "pointer" }}
+      >
+        <FaHome /> Dashboard
+      </li>
 
-          {/* Perfil */}
-          <Row className="align-items-center mb-4">
-            <Col md={8}>
-              <h5 className="text-muted">Información general</h5>
-            </Col>
-            <Col md={4} className="text-center">
-              <div className="position-relative d-inline-block">
-                <FaUserCircle size={90} className="text-secondary" />
-                <span
-                  className="position-absolute top-0 end-0 bg-success rounded-circle"
-                  style={{ width: 18, height: 18 }}
-                ></span>
-              </div>
-              <div>
-                <Button size="sm" className="mt-2">
-                  Editar
+      <li 
+        onClick={() => navigate("/Cliente/clienteTarjetas")} 
+        style={{ cursor: "pointer" }}
+      >
+        <CiCreditCard1 /> Mis Tarjetas
+      </li>
+
+      <li 
+        onClick={() => navigate("/Cliente/HistorialCliente")} 
+        style={{ cursor: "pointer" }}
+      >
+        <FaHistory /> Historial
+      </li>
+
+      <li 
+        onClick={() => navigate("/Cliente/ClienteConfiguracion")} 
+        style={{ cursor: "pointer" }}
+      >
+        <FaCog /> Configuración
+      </li>
+
+    </ul>
+  </div>
+
+  <div className="logout">
+    <FaSignOutAlt /> Cerrar sesión
+  </div>
+</aside>
+      <div className="main-content flex-grow-1 p-4">
+<div className="container-fluid px-4 pt-4">
+  <div className="bg-white shadow rounded-4 p-3">
+    <Navbar
+      nombre="Alexander Castillo"
+      correo="Alexander.Correo@Gmail.com"
+      rol="Cliente"
+    />
+  </div>
+</div>
+
+        <Container fluid className="mt-4">
+   <div style={{ width: "400px", margin: "60px auto 0 auto", textAlign: "center" }}>
+        <h1>Mis tarjetas</h1>
+    </div>
+          <Card className="border-0 shadow-sm rounded-4 p-4 mb-4">
+            <Row className="g-4">
+
+              {/* Nombre */}
+              <Col md={6}>
+                <Form.Label>Nombre</Form.Label>
+                <Form.Control value={user.nombre} readOnly />
+                <Button
+                  size="sm"
+                  className="mt-2 rounded-pill"
+                  onClick={() => setActiveModal("nombre")}
+                >
+                  Editar nombre
                 </Button>
-              </div>
-              <small className="d-block mt-1 text-muted">
-                Cambiar foto de perfil
-              </small>
-            </Col>
-          </Row>
+              </Col>
 
-          {/* Card info */}
-          <Card className="p-4 shadow-sm border-0 mb-4">
-            <Row className="g-3">
+              {/* Correo */}
               <Col md={6}>
-                <Form.Label>Nombre de usuario</Form.Label>
-                <Form.Control value="José Aguilar" readOnly />
-                <Button size="sm" className="mt-2">
-                  Editar
+                <Form.Label>
+                  <FaEnvelope className="me-2 text-primary" />
+                  Correo
+                </Form.Label>
+                <Form.Control value={user.correo} readOnly />
+                <Button
+                  size="sm"
+                  className="mt-2 rounded-pill"
+                  onClick={() => setActiveModal("correo")}
+                >
+                  Editar correo
                 </Button>
               </Col>
 
+              {/* Teléfono */}
               <Col md={6}>
-                <Form.Label>Correo electrónico</Form.Label>
-                <Form.Control value="joseagui@gmail.com" readOnly />
-                <Button size="sm" className="mt-2">
-                  Editar
+                <Form.Label>
+                  <FaPhoneAlt className="me-2 text-primary" />
+                  Teléfono
+                </Form.Label>
+                <Form.Control value={user.telefono} readOnly />
+                <Button
+                  size="sm"
+                  className="mt-2 rounded-pill"
+                  onClick={() => setActiveModal("telefono")}
+                >
+                  Editar teléfono
                 </Button>
               </Col>
 
+              {/* Contraseña */}
               <Col md={6}>
-                <Form.Label>Número de tarjetas</Form.Label>
-                <Form.Control value="Santander" readOnly />
-              </Col>
-
-              <Col md={6}>
-                <Form.Label>Contraseña</Form.Label>
-                <Form.Control value="**************" readOnly />
-                <Button size="sm" className="mt-2">
-                  Editar
+                <Form.Label>
+                  <FaLock className="me-2 text-danger" />
+                  Contraseña
+                </Form.Label>
+                <Form.Control value="********" readOnly />
+                <Button
+                  size="sm"
+                  variant="danger"
+                  className="mt-2 rounded-pill"
+                  onClick={() => setActiveModal("password")}
+                >
+                  Cambiar contraseña
                 </Button>
               </Col>
 
+              {/* FOTO CORREGIDA */}
               <Col md={6}>
-                <Form.Label>Número de teléfono</Form.Label>
-                <Form.Control value="+0189322392" readOnly />
+                <Form.Label>
+                  <FaCamera className="me-2 text-primary" />
+                  Foto de perfil
+                </Form.Label>
+
+                <div className="d-flex align-items-center gap-3">
+                  <Image
+                    src={user.foto}
+                    roundedCircle
+                    width={80}
+                    height={80}
+                    style={{ objectFit: "cover" }}
+                  />
+
+                  <Button
+                    size="sm"
+                    className="rounded-pill"
+                    onClick={() => setActiveModal("foto")}
+                  >
+                    Cambiar foto
+                  </Button>
+                </div>
               </Col>
+
             </Row>
           </Card>
 
-          {/* Compañías */}
-          <Card className="p-4 text-center shadow-sm border-0">
-            <h6 className="mb-3">Compañías de tarjetas</h6>
-            <div className="d-flex justify-content-center gap-4 fs-1">
+          {/* Tarjetas */}
+          <Card className="border-0 shadow-sm rounded-4 p-4 text-center">
+            <h6 className="fw-semibold mb-3">
+              Compañías compatibles
+            </h6>
+
+            <div className="d-flex justify-content-center gap-5 fs-1 text-secondary">
               <FaCcVisa />
               <FaCcMastercard />
               <SiMercadopago />
             </div>
+
+            <small className="text-muted mt-3 d-block">
+              Las tarjetas se gestionan desde la sección "Mis Tarjetas"
+            </small>
           </Card>
         </Container>
+
+        {/* MODALES */}
+
+        <ClientDataForm
+          show={activeModal === "nombre"}
+          handleClose={() => setActiveModal(null)}
+          title="Editar nombre"
+          label="Nuevo nombre"
+          value={user.nombre}
+          onSave={(value) => updateField("nombre", value)}
+        />
+
+        <ClientDataForm
+          show={activeModal === "telefono"}
+          handleClose={() => setActiveModal(null)}
+          title="Editar teléfono"
+          label="Nuevo teléfono"
+          value={user.telefono}
+          onSave={(value) => updateField("telefono", value)}
+        />
+
+        <ChangeEmailModal
+          show={activeModal === "correo"}
+          handleClose={() => setActiveModal(null)}
+          currentPassword={user.password}
+          onSave={(value) => updateField("correo", value)}
+        />
+
+        <ChangePasswordModal
+          show={activeModal === "password"}
+          handleClose={() => setActiveModal(null)}
+          currentPassword={user.password}
+          onSave={(value) => updateField("password", value)}
+        />
+
+        <ChangePhotoModal
+          show={activeModal === "foto"}
+          handleClose={() => setActiveModal(null)}
+          currentPhoto={user.foto}
+          onSave={(value) => updateField("foto", value)}
+        />
+
       </div>
     </div>
   );
