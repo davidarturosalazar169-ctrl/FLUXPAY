@@ -3,7 +3,6 @@ import Login from "./Login";
 import Register from "./Register";
 import Dashboard from "./Cliente/Dashboard";
 import ClienteTarjeta from "./Cliente/ClienteTarjeta";
-
 import HistorialCliente from "./Cliente/HistorialCliente";
 import ClienteConfiguracion from "./Cliente/ClienteConfiguracion";
 
@@ -16,8 +15,12 @@ import DetalleNegocio from "./Administrador/DetalleNegocio";
 import DashboardNegocio from "./Negocio/Dashboard";
 import ProductosNegocio from "./Negocio/Productos"; 
 import LayoutNegocio from "./Negocio/LayoutNegocio";
-import HistorialNegocio from './Negocio/Historial'; // Esta nueva vista
-
+import HistorialNegocio from './Negocio/Historial'; 
+import ReportesNegocio from "./Negocio/Reportes"; // Asegúrate de que el nombre del archivo coincida
+import CobrarNegocio from "./Negocio/Cobrar";
+import GenerarQR from "./Negocio/GenerarQR";
+import Cuenta from "./Negocio/Cuenta";
+import ConfiguracionNegocio from "./Negocio/Configuracion";
 function App() {
  
   return (
@@ -30,7 +33,7 @@ function App() {
       {/* CLIENTE */}
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/Cliente/clienteTarjetas" element={<ClienteTarjeta />} />
-      <Route path="/Cliente/HistorialCliente" element={<HistorialCliente/>} />
+         <Route path="/Cliente/HistorialCliente" element={<HistorialCliente/>} />
       <Route path="/Cliente/ClienteConfiguracion" element={<ClienteConfiguracion/>} />
 
 
@@ -47,6 +50,11 @@ function App() {
         <Route path="Dashboard" element={<DashboardNegocio />} />
         <Route path="Productos" element={<ProductosNegocio />} />
         <Route path="Historial" element={<HistorialNegocio />} />
+        <Route path="Reportes" element={<ReportesNegocio />} />
+        <Route path="Cobrar" element={<CobrarNegocio />} />
+        <Route path="QR" element={<GenerarQR />} />
+        <Route path="Cuenta" element={<Cuenta />} />
+       <Route path="Configuracion" element={<ConfiguracionNegocio />} />
       </Route>
 
     </Routes>
