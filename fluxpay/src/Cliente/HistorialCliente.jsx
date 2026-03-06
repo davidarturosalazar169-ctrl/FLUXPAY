@@ -93,15 +93,23 @@ const HistorialCliente = () => {
     {/* Tabla de contenido */}
     <div className="container d-flex justify-content-center mt-4">
     <div style={{ width: "85%", maxWidth: "1100px" }}>
-        <DataGrid
-        columns={["Fecha", "Concepto", "Monto", "Estado"]}
-        data={[
-            ["2/12/2024", "Comida", "MXN 1912", "Pendiente"],
-            ["2/03/2024", "Pago", "MXN 1912", "Pendiente"],
-            ["5/09/2025", "Tienda", "MXN 1912", "Pendiente"],
-            ["2/01/2026", "Disp", "MXN 1912", "Pendiente"],
-        ]}
-        />
+<DataGrid
+columns={["Fecha", "Concepto", "Monto", "Estado"]}
+data={[
+["2/12/2024", "Comida", "MXN 1912", "Pendiente"],
+["2/03/2024", "Pago", "MXN 1912", "Pendiente"],
+["5/09/2025", "Tienda", "MXN 1912", "Pendiente"],
+["2/01/2026", "Disp", "MXN 1912", "Pendiente"],
+["4/02/2026", "Supermercado", "MXN 850", "Pendiente"],
+["7/02/2026", "Gasolina", "MXN 1200", "Pendiente"],
+["10/02/2026", "Amazon", "MXN 450", "Pendiente"],
+["11/02/2026", "Uber", "MXN 120", "Pendiente"],
+["15/02/2026", "Netflix", "MXN 189", "Pendiente"],
+["18/02/2026", "Spotify", "MXN 129", "Pendiente"],
+["22/02/2026", "Mercado", "MXN 640", "Pendiente"],
+["25/02/2026", "Farmacia", "MXN 210", "Pendiente"],
+]}
+/>
     </div>
     </div>
     </div>

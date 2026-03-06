@@ -8,15 +8,7 @@ import { useNavigate } from "react-router-dom";
 import "../Styles/StyleNavbar.css";
 import {
   FaHome,
-  FaStore,
-  FaChartBar,
-  FaHeadset,
   FaSignOutAlt,
-  FaSearch,
-  FaBell,
-  FaDollarSign,
-  FaShoppingCart,
-  FaUsers,
   FaHistory,
   FaCog, 
 } from "react-icons/fa";

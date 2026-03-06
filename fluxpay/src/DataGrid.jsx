@@ -4,6 +4,13 @@ import { useState } from "react";
 
 function DataGrid({ data = [], columns = [] }) {
   const [filteredData, setFilteredData] = useState(data);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const rowsPerPage = 5;
+  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+
+  const start = (currentPage - 1) * rowsPerPage;
+  const currentRows = filteredData.slice(start, start + rowsPerPage);
 
   return (
     <div className="p-4 bg-light rounded-4 shadow-sm">
@@ -38,7 +45,7 @@ function DataGrid({ data = [], columns = [] }) {
               </td>
             </tr>
           ) : (
-            filteredData.map((row, index) => (
+            currentRows.map((row, index) => (
               <tr key={index} className="border-top">
                 {row.map((campo, i) => (
                   <td
@@ -78,6 +85,71 @@ function DataGrid({ data = [], columns = [] }) {
           )}
         </tbody>
       </Table>
+
+{totalPages > 1 && (
+  <div className="d-flex justify-content-center mt-3 gap-2 align-items-center">
+
+    {currentPage > 1 && (
+      <button
+        onClick={() => setCurrentPage(currentPage - 1)}
+        style={{
+          borderRadius: "10px",
+          padding: "6px 14px",
+          border: "1px solid #0A1F44",
+          backgroundColor: "white",
+          color: "#0A1F44",
+          fontWeight: "600",
+          cursor: "pointer"
+        }}
+      >
+        {"<"}
+      </button>
+    )}
+
+    {Array.from({ length: totalPages }, (_, i) => i + 1)
+      .slice(Math.floor((currentPage - 1) / 3) * 3, Math.floor((currentPage - 1) / 3) * 3 + 3)
+      .map((page) => (
+        <button
+          key={page}
+          onClick={() => setCurrentPage(page)}
+          style={{
+            borderRadius: "10px",
+            padding: "6px 14px",
+            border: "1px solid #0A1F44",
+            backgroundColor: currentPage === page ? "#0A1F44" : "white",
+            color: currentPage === page ? "white" : "#0A1F44",
+            fontWeight: "600",
+            cursor: "pointer"
+          }}
+        >
+          {page}
+        </button>
+      ))}
+
+    {Math.floor((currentPage - 1) / 3) * 3 + 3 < totalPages && (
+      <span style={{ fontWeight: "600", color: "#0A1F44" }}>...</span>
+    )}
+
+    {currentPage < totalPages && (
+      <button
+        onClick={() => setCurrentPage(currentPage + 1)}
+        style={{
+          borderRadius: "10px",
+          padding: "6px 14px",
+          border: "1px solid #0A1F44",
+          backgroundColor: "white",
+          color: "#0A1F44",
+          fontWeight: "600",
+          cursor: "pointer"
+        }}
+      >
+        {">"}
+      </button>
+    )}
+
+  </div>
+)}
+
     </div>
   );
 }
