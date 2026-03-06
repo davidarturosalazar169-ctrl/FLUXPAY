@@ -28,6 +28,7 @@ import CobrarNegocio from "./Negocio/Cobrar";
 import GenerarQR from "./Negocio/GenerarQR";
 import Cuenta from "./Negocio/Cuenta";
 import ConfiguracionNegocio from "./Negocio/Configuracion";
+import Clientes from './Negocio/Clientes';
 function App() {
   return (
     <Routes>
@@ -62,6 +63,7 @@ function App() {
         <Route path="QR" element={<GenerarQR />} />
         <Route path="Cuenta" element={<Cuenta />} />
        <Route path="Configuracion" element={<ConfiguracionNegocio />} />
+       <Route path="Clientes" element={<Clientes />} />
       </Route>
 
     
