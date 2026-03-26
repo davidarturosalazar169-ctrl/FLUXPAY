@@ -6,23 +6,12 @@ import TarjetasCliente from "./TarjetasCliente";
 import { Button, Card, Row, Col } from "react-bootstrap";
 import PaymentForm from "./PaymentForm";
 import "../Administrador/DashboardAdmin.css";
-
-import {
-  FaHome,
-  FaStore,
-  FaChartBar,
-  FaHeadset,
-  FaSignOutAlt,
-  FaSearch,
-  FaBell,
-  FaDollarSign,
-  FaShoppingCart,
-  FaUsers,
-  FaHistory,
-  FaCog, 
-} from "react-icons/fa";
+import axios from "axios";
+import { useEffect } from "react";
+import { FaHome,FaSignOutAlt,FaHistory,FaCog, } from "react-icons/fa";
 import { CiCreditCard1 } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
+import CerrarSesion from "../CerrarSesion";
 
 function ClienteTarjeta() {
   const navigate = useNavigate();
@@ -30,17 +19,48 @@ function ClienteTarjeta() {
   const [mostrar, setMostrar] = useState(false);
   const [tarjetas, setTarjetas] = useState([]);
 
+    useEffect(() => {
+    axios.get("http://127.0.0.1:8000/api/tarjetas")
+      .then(res => setTarjetas(res.data))
+      .catch(err => console.error(err));
+  }, []);
+
   const handleMostrar = () => setMostrar(true);
   const handleCerrar = () => setMostrar(false);
 
-  const handlesave = (data) => {
-    setTarjetas((prev) => [data, ...prev]);
-    setMostrar(false);
-  };
+const handlesave = async (data) => {
+  try {
+    const res = await axios.post("http://127.0.0.1:8000/api/tarjetas", {
+      brand: data.brand,
+      last4: data.last4,
+      exp_month: data.exp_month,
+      exp_year: data.exp_year,
+      name: data.name
+    });
 
-  const borrarTarjeta = (index) => {
-    setTarjetas((prev) => prev.filter((_, i) => i !== index));
-  };
+    // guardar en frontend también
+    setTarjetas((prev) => [res.data.data, ...prev]);
+
+    setMostrar(false);
+
+  } catch (error) {
+    console.error(error);
+    alert("Error al guardar tarjeta");
+  }
+};
+
+const borrarTarjeta = async (id) => {
+  try {
+    await axios.delete(`http://127.0.0.1:8000/api/tarjetas/${id}`);
+
+    // actualizar frontend
+    setTarjetas((prev) => prev.filter((t) => t.id !== id));
+
+  } catch (error) {
+    console.error(error);
+    alert("Error al eliminar tarjeta");
+  }
+};
 
   return (
     <div className="page">
@@ -86,9 +106,8 @@ function ClienteTarjeta() {
     </ul>
   </div>
 
-  <div className="logout">
-    <FaSignOutAlt /> Cerrar sesión
-  </div>
+<CerrarSesion/>
+
 </aside>
 
       {/* Contenido principal */}
@@ -112,20 +131,19 @@ function ClienteTarjeta() {
                 <Col key={index} md={6} lg={4}>
                   <Card className="shadow-sm h-100">
                     <Card.Body>
-                      <TarjetasCliente
-                        number={tarjeta.number}
-                        expiry={tarjeta.expiry}
-                        cvc={tarjeta.cvc}
-                        name={tarjeta.name}
-                        focused={tarjeta.focus}
-                      />
-                      <Button
-                        variant="danger"
-                        className="mt-3 w-100"
-                        onClick={() => borrarTarjeta(index)}
-                      >
-                        Borrar Tarjeta
-                      </Button>
+<TarjetasCliente
+  number={tarjeta.last4}   // 👈 SOLO LOS 4
+  brand={tarjeta.brand} 
+  expiry={`${tarjeta.exp_month}/${String(tarjeta.exp_year).slice(-2)}`}
+  name={tarjeta.name}
+/>
+<Button
+  variant="danger"
+  className="mt-3 w-100"
+  onClick={() => borrarTarjeta(tarjeta.id)}
+>
+  Borrar Tarjeta
+</Button>
                     </Card.Body>
                   </Card>
                 </Col>

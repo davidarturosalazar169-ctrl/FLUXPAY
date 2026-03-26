@@ -6,13 +6,13 @@ import ClientDataForm from "./ClientDataForm";
 import ChangeEmailModal from "./ChangeEmailModal";
 import ChangePasswordModal from "./ChangePasswordModal";
 import ChangePhotoModal from "./ChangePhotoModal";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../Administrador/DashboardAdmin.css";
 import { useNavigate } from "react-router-dom";
-
 import {FaHome,FaStore,FaChartBar,FaHeadset,FaSignOutAlt,FaSearch,FaBell,FaDollarSign,FaShoppingCart,FaUsers,FaHistory,FaCog, } from "react-icons/fa";
 import { CiCreditCard1 } from "react-icons/ci";
-
+import Axios from "axios";
+import CerrarSesion from "../CerrarSesion";
 
 // Imagen local
 import FotoPerfil from "./FotoPerfil.png";
@@ -28,6 +28,17 @@ function ClienteConfiguracion() {
     password: "123456",
     foto: FotoPerfil
   });
+  useEffect(() => {
+  Axios.get("http://127.0.0.1:8000/api/cliente/configuracion")
+    .then((res) => {
+      setUser((prev) => ({
+        ...prev,
+        nombre: res.data.nombre,
+        correo: res.data.correo
+      }));
+    })
+    .catch((err) => console.log(err));
+}, []);
 
   const [activeModal, setActiveModal] = useState(null);
 
@@ -80,17 +91,14 @@ function ClienteConfiguracion() {
 
     </ul>
   </div>
-
-  <div className="logout">
-    <FaSignOutAlt /> Cerrar sesión
-  </div>
+<CerrarSesion/>
 </aside>
       <div className="main-content flex-grow-1 p-4">
 <div className="container-fluid px-4 pt-4">
   <div className="bg-white shadow rounded-4 p-3">
     <Navbar
-      nombre="Alexander Castillo"
-      correo="Alexander.Correo@Gmail.com"
+      nombre={user.nombre}
+      correo={user.correo}
       rol="Cliente"
     />
   </div>
@@ -220,7 +228,11 @@ function ClienteConfiguracion() {
           title="Editar nombre"
           label="Nuevo nombre"
           value={user.nombre}
-          onSave={(value) => updateField("nombre", value)}
+          onSave={(value) => {
+            Axios.put("http://127.0.0.1:8000/api/cliente/actualizar", {
+              nombre: value
+            }).then(() => updateField("nombre", value));
+          }}
         />
 
         <ClientDataForm

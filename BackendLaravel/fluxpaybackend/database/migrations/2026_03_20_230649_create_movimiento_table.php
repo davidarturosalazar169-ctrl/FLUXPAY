@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('idnegocio')->constrained('negocio')->onDelete('cascade');
-
+            $table->unsignedBigInteger('iduser');
             $table->decimal('monto_total', 10, 2)->nullable();
             $table->decimal('comision', 10, 2)->nullable();
 

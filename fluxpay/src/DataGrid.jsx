@@ -1,10 +1,15 @@
 import { Table } from "react-bootstrap";
 import SearchBar from "./SearchBar";
-import { useState } from "react";
+import { useState, useEffect  } from "react";
 
 function DataGrid({ data = [], columns = [] }) {
   const [filteredData, setFilteredData] = useState(data);
   const [currentPage, setCurrentPage] = useState(1);
+
+    useEffect(() => {
+    setFilteredData(data);
+    setCurrentPage(1);
+  }, [data]);
 
   const rowsPerPage = 5;
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);

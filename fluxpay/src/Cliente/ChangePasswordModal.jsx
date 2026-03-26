@@ -1,6 +1,7 @@
 import { Modal, Button, Form } from "react-bootstrap";
 import { useState } from "react";
 import Swal from "sweetalert2";
+import Axios from "axios";
 
 const ChangePasswordModal = ({ show, handleClose, currentPassword, onSave }) => {
   const [current, setCurrent] = useState("");
@@ -19,15 +20,8 @@ const ChangePasswordModal = ({ show, handleClose, currentPassword, onSave }) => 
       return;
     }
 
-    if (current !== currentPassword) {
-      Swal.fire({
-        icon: "error",
-        title: "Contraseña incorrecta",
-        text: "La contraseña actual no es correcta",
-        confirmButtonText: "Aceptar"
-      });
-      return;
-    }
+    // YA NO VALIDAMOS AQUÍ
+    // if (current !== currentPassword) { ... }
 
     if (newPass !== confirm) {
       Swal.fire({
@@ -39,15 +33,30 @@ const ChangePasswordModal = ({ show, handleClose, currentPassword, onSave }) => 
       return;
     }
 
-    onSave(newPass);
-    handleClose();
+    // VALIDACIÓN REAL EN LARAVEL
+    Axios.put("http://127.0.0.1:8000/api/cliente/actualizar", {
+      current_password: current,
+      password: newPass
+    })
+    .then(() => {
+      onSave(newPass);
+      handleClose();
 
-    Swal.fire({
-      icon: "success",
-      title: "Cambios guardados",
-      text: "La información del negocio se actualizó correctamente.",
-      confirmButtonText: "Aceptar",
-      confirmButtonColor: "#0d3b66"
+      Swal.fire({
+        icon: "success",
+        title: "Cambios guardados",
+        text: "La contraseña se actualizó correctamente.",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#0d3b66"
+      });
+    })
+    .catch((err) => {
+      Swal.fire({
+        icon: "error",
+        title: "Contraseña incorrecta",
+        text: err.response?.data?.error || "Error",
+        confirmButtonText: "Aceptar"
+      });
     });
   };
 
