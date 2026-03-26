@@ -1,6 +1,6 @@
 import "./ConfiguracionAdmi.css";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import {
   FaHome,
@@ -16,10 +16,10 @@ export default function ConfiguracionAdmi() {
   const navigate = useNavigate();
 
   const [adminData, setAdminData] = useState({
-    nombre: "Alexander Castillo",
-    correo: "alexander.castillo@gmail.com",
-    telefono: "+52 999 473 5270",
-    password: "********",
+    name: "",
+    email: "",
+    telefono: "",
+    password: "",
     foto: "https://i.pravatar.cc/100?u=alex"
   });
 
@@ -30,6 +30,64 @@ export default function ConfiguracionAdmi() {
     password: false
   });
 
+  // 🔥 CARGAR DATOS DESDE LARAVEL (CON TOKEN)
+  useEffect(() => {
+
+    const token = localStorage.getItem("token");
+
+    // 🔴 Si no hay token → fuera
+    if (!token) {
+      Swal.fire({
+        icon: "warning",
+        title: "Sesión requerida",
+        text: "Debes iniciar sesión"
+      });
+      navigate("/");
+      return;
+    }
+
+    fetch("http://127.0.0.1:8000/api/admin", {
+      headers: {
+        "Authorization": "Bearer " + token,
+        "Accept": "application/json"
+      }
+    })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error("No autenticado");
+        }
+        return res.json();
+      })
+      .then(data => {
+
+        // 🔴 Si viene error del backend
+        if (data.message) {
+          throw new Error(data.message);
+        }
+
+        setAdminData({
+          name: data.name || "",
+          email: data.email || "",
+          telefono: data.telefono || "",
+          password: "",
+          foto: "https://i.pravatar.cc/100?u=" + data.email
+        });
+      })
+      .catch(err => {
+        console.error(err);
+
+        Swal.fire({
+          icon: "error",
+          title: "Sesión expirada",
+          text: "Vuelve a iniciar sesión"
+        });
+
+        localStorage.removeItem("token");
+        navigate("/");
+      });
+
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -39,17 +97,43 @@ export default function ConfiguracionAdmi() {
     });
   };
 
-  const toggleEdit = (campo) => {
+  // 🔥 GUARDAR EN BD (CON TOKEN)
+  const toggleEdit = async (campo) => {
 
     if (editMode[campo]) {
 
-      Swal.fire({
-        icon: "success",
-        title: "Datos actualizados",
-        text: "La información se guardó correctamente.",
-        confirmButtonColor: "#0d2b5c"
-      });
+      try {
 
+        const res = await fetch("http://127.0.0.1:8000/api/admin", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("token"),
+            "Accept": "application/json"
+          },
+          body: JSON.stringify(adminData)
+        });
+
+        if (!res.ok) {
+          throw new Error("Error al guardar");
+        }
+
+        Swal.fire({
+          icon: "success",
+          title: "Datos actualizados",
+          text: "Se guardaron en la base de datos.",
+          confirmButtonColor: "#0d2b5c"
+        });
+
+      } catch (error) {
+        console.error(error);
+
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudo guardar.",
+        });
+      }
     }
 
     setEditMode({
@@ -128,7 +212,10 @@ export default function ConfiguracionAdmi() {
 
           <div
             className="logout"
-            onClick={() => navigate("/")}
+            onClick={() => {
+              localStorage.removeItem("token");
+              navigate("/");
+            }}
             style={{ cursor: "pointer" }}
           >
             <FaSignOutAlt /> Cerrar sesión
@@ -156,14 +243,13 @@ export default function ConfiguracionAdmi() {
             <div className="config-grid">
 
               {/* NOMBRE */}
-
               <div className="config-field">
                 <label>Nombre</label>
 
                 <input
                   type="text"
-                  name="nombre"
-                  value={adminData.nombre}
+                  name="name"
+                  value={adminData.name}
                   disabled={!editMode.nombre}
                   onChange={handleChange}
                 />
@@ -174,18 +260,16 @@ export default function ConfiguracionAdmi() {
                 >
                   {editMode.nombre ? "Guardar" : "Editar nombre"}
                 </button>
-
               </div>
 
               {/* CORREO */}
-
               <div className="config-field">
                 <label>Correo</label>
 
                 <input
                   type="text"
-                  name="correo"
-                  value={adminData.correo}
+                  name="email"
+                  value={adminData.email}
                   disabled={!editMode.correo}
                   onChange={handleChange}
                 />
@@ -196,11 +280,9 @@ export default function ConfiguracionAdmi() {
                 >
                   {editMode.correo ? "Guardar" : "Editar correo"}
                 </button>
-
               </div>
 
               {/* TELEFONO */}
-
               <div className="config-field">
                 <label>Teléfono</label>
 
@@ -218,11 +300,9 @@ export default function ConfiguracionAdmi() {
                 >
                   {editMode.telefono ? "Guardar" : "Editar teléfono"}
                 </button>
-
               </div>
 
               {/* PASSWORD */}
-
               <div className="config-field">
                 <label>Contraseña</label>
 
@@ -240,17 +320,13 @@ export default function ConfiguracionAdmi() {
                 >
                   {editMode.password ? "Guardar contraseña" : "Cambiar contraseña"}
                 </button>
-
               </div>
 
               {/* FOTO */}
-
               <div className="config-field photo-field">
-
                 <label>Foto de perfil</label>
 
                 <div className="photo-box">
-
                   <img src={adminData.foto} alt="perfil"/>
 
                   <input
@@ -258,9 +334,7 @@ export default function ConfiguracionAdmi() {
                     accept="image/*"
                     onChange={handlePhoto}
                   />
-
                 </div>
-
               </div>
 
             </div>
