@@ -1,21 +1,75 @@
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import "./login.css";
 
 export default function Login() {
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    navigate("/admin/dashboard");
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email,
+          password
+        })
+      });
+
+      const data = await res.json();
+
+      console.log("Respuesta login:", data); // 🔥 DEBUG
+
+      if (res.ok) {
+        // 🔐 guardar datos
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify({
+  ...data.user,
+  idrol: data.rol // 🔥 aseguramos el rol
+}));
+
+        // 🔥 REDIRECCIÓN POR ROL (AJUSTADO A TU BD)
+        switch (data.rol) {
+
+          case 1:
+            navigate("/admin/dashboard");
+            break;
+
+          case 8:
+            navigate("/negocio"); // 🔥 IMPORTANTE
+            break;
+
+          case 9:
+            navigate("/dashboard");
+            break;
+
+          default:
+            navigate("/");
+        }
+
+      } else {
+        alert(data.message || "Error al iniciar sesión");
+      }
+
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error al conectar con el servidor");
+    }
   };
 
   return (
     <div className="login-container">
 
-      {/* Fondo con overlay */}
       <div className="login-overlay">
 
-        {/* Panel izquierdo estilo referencia */}
+        {/* IZQUIERDA */}
         <div className="login-left">
           <div className="left-content">
             <h1>
@@ -34,7 +88,7 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Card login derecha */}
+        {/* DERECHA */}
         <div className="login-right">
           <div className="login-card">
 
@@ -49,15 +103,20 @@ export default function Login() {
             <h2>Iniciar sesión</h2>
 
             <form onSubmit={handleLogin}>
+
               <input
                 type="email"
                 placeholder="Correo electrónico"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
 
               <input
                 type="password"
                 placeholder="Contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
 
