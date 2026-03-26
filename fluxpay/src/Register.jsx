@@ -1,34 +1,60 @@
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import "./register.css";
 import Swal from "sweetalert2";
 
 export default function Register() {
   const navigate = useNavigate();
 
-  const handleRegister = (e) => {
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [rol, setRol] = useState("cliente"); // 🔥 por defecto
+
+  const handleRegister = async (e) => {
     e.preventDefault();
 
-    Swal.fire({
-      icon: "success",
-      title: "Cuenta creada",
-      text: "Tu cuenta fue registrada correctamente.",
-      confirmButtonText: "Continuar",
-      confirmButtonColor: "#0d2b5c",
-      background: "#ffffff",
-      color: "#333"
-    });
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          rol
+        })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        Swal.fire({
+          icon: "success",
+          title: "Cuenta creada",
+          text: "Tu cuenta fue registrada correctamente.",
+          confirmButtonColor: "#0d2b5c"
+        });
+
+        navigate("/");
+      } else {
+        Swal.fire("Error", data.message || "No se pudo registrar", "error");
+      }
+
+    } catch (error) {
+      console.error(error);
+      Swal.fire("Error", "Error al conectar con el servidor", "error");
+    }
   };
 
   return (
     <div className="register-page">
 
-      {/* SECCIÓN IZQUIERDA */}
+      {/* IZQUIERDA */}
       <div className="register-left">
-        <img 
-          src="/fluxpay.jpg" 
-          alt="FluxPay Logo" 
-          className="hero-logo"
-        />
+        <img src="/fluxpay.jpg" alt="FluxPay Logo" className="hero-logo" />
 
         <h1>
           Impulsa tu negocio con <span>FluxPay</span>
@@ -40,17 +66,42 @@ export default function Register() {
         </p>
       </div>
 
-      {/* CARD DERECHA */}
+      {/* FORM */}
       <form className="register-card" onSubmit={handleRegister}>
         <h2>Crear Cuenta</h2>
 
         <div className="register-grid">
-          <input type="email" placeholder="Correo" required />
-          <input type="text" placeholder="Nombre" required />
-          <input type="password" placeholder="Contraseña" required />
-          <input type="text" placeholder="Banco" required />
-          <input type="text" placeholder="Nombre del negocio" />
-          <input type="text" placeholder="Cuenta bancaria" />
+
+          <input 
+            type="email" 
+            placeholder="Correo"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required 
+          />
+
+          <input 
+            type="text" 
+            placeholder="Nombre"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required 
+          />
+
+          <input 
+            type="password" 
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required 
+          />
+
+          {/* 🔥 SELECT DE ROL */}
+          <select onChange={(e) => setRol(e.target.value)}>
+            <option value="cliente">Cliente</option>
+            <option value="negocio">Negocio</option>
+          </select>
+
         </div>
 
         <button type="submit" className="btn-primary">

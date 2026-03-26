@@ -1,6 +1,6 @@
-import "./GestionNegocios.css";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import Swal from "sweetalert2";
 import {
   FaHome,
   FaStore,
@@ -8,321 +8,272 @@ import {
   FaHeadset,
   FaSignOutAlt,
   FaCheckCircle,
-  FaTimesCircle,
-  FaClock,
-  FaCog
+  FaCog,
 } from "react-icons/fa";
+import "./GestionNegocios.css";
 
 export default function GestionNegocios() {
-
   const navigate = useNavigate();
+
+  // Estados
+  const [negociosData, setNegociosData] = useState([]);
+  const [busqueda, setBusqueda] = useState("");
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [mostrarModal, setMostrarModal] = useState(false);
+  const [editando, setEditando] = useState(false);
+  const [form, setForm] = useState({ id: null, nombre: "", descripcion: "", telefono: "" });
 
   const negociosPorPagina = 5;
 
-  const [paginaActual, setPaginaActual] = useState(1);
+  // Token de usuario
+  const token = localStorage.getItem("token"); // 🔥 Asegúrate de guardar el token al loguearte
 
-  const [negociosData, setNegociosData] = useState([
-    {
-      id: 1,
-      nombre: "Café el roble",
-      propietario: "Nicole Rodriguez",
-      correo: "nicole@ejemplo.com",
-      estado: "activo",
-      ventas: 320,
-      ingresos: "$105,430",
-    },
-    {
-      id: 2,
-      nombre: "Moda Express",
-      propietario: "Jorge Ramirez",
-      correo: "jorge@ejemplo.com",
-      estado: "activo",
-      ventas: 245,
-      ingresos: "$56,920",
-    },
-    {
-      id: 3,
-      nombre: "Tienda Luna",
-      propietario: "Ana Pérez",
-      correo: "ana@ejemplo.com",
-      estado: "inactivo",
-      ventas: 128,
-      ingresos: "$32,780",
-    },
-    {
-      id: 4,
-      nombre: "Panadería Sol",
-      propietario: "Luis Gómez",
-      correo: "luis@ejemplo.com",
-      estado: "activo",
-      ventas: 410,
-      ingresos: "$89,200",
-    },
-    {
-      id: 5,
-      nombre: "ElectroShop",
-      propietario: "Carlos Vega",
-      correo: "carlos@ejemplo.com",
-      estado: "verificar",
-      ventas: 98,
-      ingresos: "$24,500",
-    },
-    {
-      id: 6,
-      nombre: "MiniMarket Centro",
-      propietario: "Sofía Herrera",
-      correo: "sofia@ejemplo.com",
-      estado: "activo",
-      ventas: 522,
-      ingresos: "$132,400",
-    },
-    {
-      id: 7,
-      nombre: "Zapatería León",
-      propietario: "Mario León",
-      correo: "mario@ejemplo.com",
-      estado: "inactivo",
-      ventas: 77,
-      ingresos: "$12,700",
-    },
-    {
-      id: 8,
-      nombre: "Papelería Escolar",
-      propietario: "Lucía Torres",
-      correo: "lucia@ejemplo.com",
-      estado: "activo",
-      ventas: 201,
-      ingresos: "$41,200",
-    },
-    {
-      id: 9,
-      nombre: "Juguetería Feliz",
-      propietario: "Pedro Castillo",
-      correo: "pedro@ejemplo.com",
-      estado: "verificar",
-      ventas: 54,
-      ingresos: "$10,400",
-    },
-    {
-      id: 10,
-      nombre: "Boutique Glam",
-      propietario: "Andrea Ruiz",
-      correo: "andrea@ejemplo.com",
-      estado: "activo",
-      ventas: 189,
-      ingresos: "$37,900",
-    },
-    {
-      id: 11,
-      nombre: "Farmacia Vida",
-      propietario: "Daniel Ortiz",
-      correo: "daniel@ejemplo.com",
-      estado: "activo",
-      ventas: 340,
-      ingresos: "$78,500",
-    },
-    {
-      id: 12,
-      nombre: "Cocina Casera",
-      propietario: "Laura Sánchez",
-      correo: "laura@ejemplo.com",
-      estado: "verificar",
-      ventas: 63,
-      ingresos: "$13,700",
-    },
-    {
-      id: 13,
-      nombre: "Tech World",
-      propietario: "Fernando Díaz",
-      correo: "fernando@ejemplo.com",
-      estado: "activo",
-      ventas: 275,
-      ingresos: "$94,200",
-    },
-  ]);
+  // Obtener datos de la API
+  const obtenerNegocios = async () => {
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/negocios", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      const data = await res.json();
+
+      const formateados = data.map((n) => ({
+        id: n.id,
+        nombre: n.nombre,
+        descripcion: n.descripcion || "Sin información",
+        telefono: n.telefono || "N/A",
+        estado: n.status === 1 ? "activo" : n.status === 0 ? "inactivo" : "verificar",
+        ventas: 0,
+        ingresos: "$0",
+      }));
+
+      setNegociosData(formateados);
+    } catch (err) {
+      console.error("Error al cargar negocios:", err);
+    }
+  };
 
   useEffect(() => {
-    const nuevo = localStorage.getItem("nuevoNegocio");
-
-    if (nuevo) {
-      const negocio = JSON.parse(nuevo);
-      setNegociosData((prev) => [...prev, negocio]);
-      localStorage.removeItem("nuevoNegocio");
-    }
+    obtenerNegocios();
   }, []);
+
+  // Guardar o actualizar negocio
+  const guardarNegocio = async () => {
+    const url = editando
+      ? `http://127.0.0.1:8000/api/negocios/${form.id}`
+      : "http://127.0.0.1:8000/api/negocios";
+    const method = editando ? "PUT" : "POST";
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          nombre: form.nombre,
+          descripcion: form.descripcion,
+          telefono: form.telefono,
+          status: 1
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Error al guardar negocio");
+      }
+
+      Swal.fire(
+        "Éxito",
+        editando ? "Negocio actualizado" : "Negocio creado",
+        "success"
+      );
+
+      cerrarModal();
+      obtenerNegocios();
+    } catch (error) {
+      Swal.fire("Error", error.message, "error");
+    }
+  };
+
+  // Eliminar negocio
+  const eliminarNegocio = (id) => {
+    Swal.fire({
+      title: "¿Eliminar negocio?",
+      text: "Esta acción no se puede deshacer",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await fetch(`http://127.0.0.1:8000/api/negocios/${id}`, {
+            method: "DELETE",
+            headers: { "Authorization": `Bearer ${token}` }
+          });
+          Swal.fire("Eliminado", "El negocio ha sido borrado", "success");
+          obtenerNegocios();
+        } catch (error) {
+          Swal.fire("Error", "No se pudo eliminar el negocio", "error");
+        }
+      }
+    });
+  };
+
+  // Modales
+  const abrirCrear = () => {
+    setEditando(false);
+    setForm({ id: null, nombre: "", descripcion: "", telefono: "" });
+    setMostrarModal(true);
+  };
+
+  const abrirEditar = (negocio) => {
+    setEditando(true);
+    setForm(negocio);
+    setMostrarModal(true);
+  };
+
+  const cerrarModal = () => setMostrarModal(false);
+
+  // Filtrar y paginar
+  const negociosFiltrados = negociosData.filter(
+    (n) =>
+      n.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+      n.descripcion.toLowerCase().includes(busqueda.toLowerCase())
+  );
 
   const indiceUltimo = paginaActual * negociosPorPagina;
   const indicePrimero = indiceUltimo - negociosPorPagina;
-
-  const negociosActuales = negociosData.slice(indicePrimero, indiceUltimo);
-
-  const totalPaginas = Math.ceil(negociosData.length / negociosPorPagina);
+  const negociosActuales = negociosFiltrados.slice(indicePrimero, indiceUltimo);
+  const totalPaginas = Math.ceil(negociosFiltrados.length / negociosPorPagina);
 
   return (
     <div className="admin-layout">
-
+      {/* SIDEBAR */}
       <aside className="admin-sidebar">
-
         <div>
-
           <div className="admin-logo-container">
             <img src="/fluxpay.jpg" alt="FluxPay Logo" className="admin-logo" />
           </div>
-
           <ul className="sidebar-menu">
-
-            <li onClick={() => navigate("/admin/dashboard")}>
-              <FaHome /> Dashboard
-            </li>
-
-            <li className="active">
-              <FaStore /> Gestión Negocios
-            </li>
-
-            <li onClick={() => navigate("/admin/reportes")}>
-              <FaChartBar /> Reportes globales
-            </li>
-
-            <li>
-              <FaHeadset /> Soporte
-            </li>
-
+            <li onClick={() => navigate("/admin/dashboard")}><FaHome /> Dashboard</li>
+            <li className="active"><FaStore /> Gestión Negocios</li>
+            <li onClick={() => navigate("/admin/reportes")}><FaChartBar /> Reportes</li>
+            <li><FaHeadset /> Soporte</li>
           </ul>
-
         </div>
-
-        {/* PARTE INFERIOR DEL SIDEBAR */}
         <div>
-
           <ul className="sidebar-menu">
-
-            <li onClick={() => navigate("/admin/configuracion")}>
-              <FaCog /> Configuración
-            </li>
-
+            <li onClick={() => navigate("/admin/configuracion")}><FaCog /> Configuración</li>
           </ul>
-
-          <div className="logout" onClick={() => navigate("/login")}>
-            <FaSignOutAlt /> Cerrar sesión
-          </div>
-
+          <div className="logout" onClick={() => navigate("/")}><FaSignOutAlt /> Cerrar sesión</div>
         </div>
-
       </aside>
 
+      {/* CONTENIDO PRINCIPAL */}
       <div className="admin-main">
-
         <header className="header-wrapper">
           <div className="header-left">
             <h1>Gestión negocios</h1>
-            <p>Administra todos los negocios registrados</p>
+            <p>Administra todos los negocios registrados en la plataforma</p>
           </div>
-
-          <button
-            className="btn-primary"
-            onClick={() => navigate("/admin/agregar")}
-          >
-            + Agregar negocio
-          </button>
+          <button className="btn-primary" onClick={abrirCrear}>+ Agregar negocio</button>
         </header>
 
         <main className="admin-dashboard">
-
-          <div className="negocios-table">
-
-            <div className="table-header">
-              <div>Negocio</div>
-              <div>Propietario</div>
-              <div>Estado</div>
-              <div>Ventas</div>
-              <div>Acciones</div>
-            </div>
-
-            {negociosActuales.map((negocio) => (
-              <div className="table-row" key={negocio.id}>
-
-                <div>{negocio.nombre}</div>
-
-                <div>
-                  {negocio.propietario}
-                  <br />
-                  <small>{negocio.correo}</small>
-                </div>
-
-                <div>
-
-                  {negocio.estado === "activo" && (
-                    <span className="badge activo">
-                      <FaCheckCircle /> Activo
-                    </span>
-                  )}
-
-                  {negocio.estado === "inactivo" && (
-                    <span className="badge inactivo">
-                      <FaTimesCircle /> Inactivo
-                    </span>
-                  )}
-
-                  {negocio.estado === "verificar" && (
-                    <span className="badge verificar">
-                      <FaClock /> Verificar
-                    </span>
-                  )}
-
-                </div>
-
-                <div>
-                  {negocio.ventas} | {negocio.ingresos}
-                </div>
-
-                <div className="acciones">
-                  <button
-                    className="btn-dark small"
-                    onClick={() => navigate(`/admin/negocio/${negocio.id}`)}
-                  >
-                    Editar
-                  </button>
-                </div>
-
-              </div>
-            ))}
-
+          {/* BARRA DE BÚSQUEDA */}
+          <div className="search-container">
+            <input
+              type="text"
+              placeholder="Buscar negocio por nombre o descripción..."
+              value={busqueda}
+              onChange={(e) => { setBusqueda(e.target.value); setPaginaActual(1); }}
+            />
           </div>
 
+          {/* TABLA */}
+          <div className="table-container">
+            <table className="custom-table">
+              <thead>
+                <tr>
+                  <th>Negocio</th>
+                  <th>Descripción</th>
+                  <th>Teléfono</th>
+                  <th>Estado</th>
+                  <th>Ventas / Ingresos</th>
+                  <th className="text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {negociosActuales.length > 0 ? (
+                  negociosActuales.map((negocio) => (
+                    <tr key={negocio.id}>
+                      <td className="font-bold">{negocio.nombre}</td>
+                      <td>{negocio.descripcion}</td>
+                      <td>{negocio.telefono}</td>
+                      <td>
+                        <span className={`badge ${negocio.estado}`}>
+                          <FaCheckCircle /> {negocio.estado}
+                        </span>
+                      </td>
+                      <td>{negocio.ventas} | {negocio.ingresos}</td>
+                      <td className="acciones">
+                        <button className="btn-dark small" onClick={() => abrirEditar(negocio)}>Editar</button>
+                        <button className="btn-eliminar small" onClick={() => eliminarNegocio(negocio.id)}>Eliminar</button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="text-center">No se encontraron negocios.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* PAGINACIÓN */}
           <div className="pagination">
-
-            <button
-              className="page-btn"
-              onClick={() => setPaginaActual(paginaActual - 1)}
-              disabled={paginaActual === 1}
-            >
-              {"<"}
-            </button>
-
+            <button onClick={() => setPaginaActual(p => Math.max(p - 1, 1))} disabled={paginaActual === 1}>{"<"}</button>
             {[...Array(totalPaginas)].map((_, i) => (
               <button
                 key={i}
-                className={`page-btn ${paginaActual === i + 1 ? "active" : ""}`}
+                className={paginaActual === i + 1 ? "active" : ""}
                 onClick={() => setPaginaActual(i + 1)}
               >
                 {i + 1}
               </button>
             ))}
-
-            <button
-              className="page-btn"
-              onClick={() => setPaginaActual(paginaActual + 1)}
-              disabled={paginaActual === totalPaginas}
-            >
-              {">"}
-            </button>
-
+            <button onClick={() => setPaginaActual(p => Math.min(p + 1, totalPaginas))} disabled={paginaActual === totalPaginas}>{">"}</button>
           </div>
-
         </main>
-
       </div>
 
+      {/* MODAL */}
+      {mostrarModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>{editando ? "Editar negocio" : "Agregar negocio"}</h2>
+            <div className="form-group">
+              <label>Nombre del negocio</label>
+              <input value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} placeholder="Ej. Taquería El Chavo" />
+            </div>
+            <div className="form-group">
+              <label>Descripción</label>
+              <input value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} placeholder="Breve descripción..." />
+            </div>
+            <div className="form-group">
+              <label>Teléfono</label>
+              <input value={form.telefono} onChange={(e) => setForm({ ...form, telefono: e.target.value })} placeholder="123 456 7890" />
+            </div>
+            <div className="modal-actions">
+              <button className="btn-primary" onClick={guardarNegocio}>Guardar Cambios</button>
+              <button className="btn-dark" onClick={cerrarModal}>Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
