@@ -1,6 +1,6 @@
 import "./Soporte.css";
 import { useNavigate } from "react-router-dom";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Swal from "sweetalert2";
 import {
   FaHome,
@@ -20,144 +20,35 @@ export default function Soporte() {
 
   const ticketsPorPagina = 5;
 
-  const [tickets] = useState([
-    {
-      id: 1,
-      cliente: "Javier López",
-      negocio: "Café el roble",
-      estado: "Pendiente",
-      prioridad: "Alta",
-      tiempo: "Hace 1 hora",
-      mensaje: "No puedo generar el código QR para recibir pagos en mi negocio."
-    },
-    {
-      id: 2,
-      cliente: "Andrea Morales",
-      negocio: "Moda Express",
-      estado: "Pendiente",
-      prioridad: "Baja",
-      tiempo: "Hace 2 horas",
-      mensaje: "No logro conectar mi cuenta bancaria con la plataforma."
-    },
-    {
-      id: 3,
-      cliente: "Ricardo Fernandez",
-      negocio: "Tacos los amigos",
-      estado: "En curso",
-      prioridad: "Media",
-      tiempo: "Hace 3 horas",
-      mensaje: "Los pagos aparecen como pendientes aunque ya se realizaron."
-    },
-    {
-      id: 4,
-      cliente: "Ana Pérez",
-      negocio: "Tienda luna",
-      estado: "Pendiente",
-      prioridad: "Media",
-      tiempo: "Hace 1 día",
-      mensaje: "Necesito ayuda para actualizar los datos de mi negocio."
-    },
-    {
-      id: 5,
-      cliente: "Daniel García",
-      negocio: "Tech solutions",
-      estado: "Resuelto",
-      prioridad: "Alta",
-      tiempo: "Hace 8 horas",
-      mensaje: "Tuve un problema con una transacción duplicada."
-    },
+  // 🔥 AHORA VIENE DE LA API
+  const [tickets, setTickets] = useState([]);
 
-    {
-      id: 6,
-      cliente: "Carlos Vega",
-      negocio: "ElectroShop",
-      estado: "Pendiente",
-      prioridad: "Alta",
-      tiempo: "Hace 4 horas",
-      mensaje: "El sistema no registra algunos pagos realizados."
-    },
-    {
-      id: 7,
-      cliente: "Laura Sánchez",
-      negocio: "Cocina casera",
-      estado: "En curso",
-      prioridad: "Media",
-      tiempo: "Hace 6 horas",
-      mensaje: "Necesito cambiar el correo de mi cuenta."
-    },
-    {
-      id: 8,
-      cliente: "Pedro Castillo",
-      negocio: "Juguetería feliz",
-      estado: "Pendiente",
-      prioridad: "Baja",
-      tiempo: "Hace 5 horas",
-      mensaje: "No puedo actualizar los precios de mis productos."
-    },
-    {
-      id: 9,
-      cliente: "Lucía Torres",
-      negocio: "Papelería escolar",
-      estado: "Resuelto",
-      prioridad: "Media",
-      tiempo: "Hace 10 horas",
-      mensaje: "Se solucionó el problema con el QR."
-    },
-    {
-      id: 10,
-      cliente: "Mario León",
-      negocio: "Zapatería León",
-      estado: "Pendiente",
-      prioridad: "Alta",
-      tiempo: "Hace 2 días",
-      mensaje: "Error al generar reportes de ventas."
-    },
-    {
-      id: 11,
-      cliente: "Fernando Díaz",
-      negocio: "Tech World",
-      estado: "En curso",
-      prioridad: "Alta",
-      tiempo: "Hace 12 horas",
-      mensaje: "Mi cuenta aparece suspendida sin motivo."
-    },
-    {
-      id: 12,
-      cliente: "Sofía Herrera",
-      negocio: "MiniMarket Centro",
-      estado: "Pendiente",
-      prioridad: "Media",
-      tiempo: "Hace 7 horas",
-      mensaje: "No aparecen mis ventas del día."
-    },
-    {
-      id: 13,
-      cliente: "Luis Gómez",
-      negocio: "Panadería Sol",
-      estado: "Resuelto",
-      prioridad: "Baja",
-      tiempo: "Hace 1 día",
-      mensaje: "Consulta sobre métodos de pago."
-    },
-    {
-      id: 14,
-      cliente: "Andrea Ruiz",
-      negocio: "Boutique Glam",
-      estado: "Pendiente",
-      prioridad: "Alta",
-      tiempo: "Hace 3 horas",
-      mensaje: "Error al retirar dinero a mi banco."
-    },
-    {
-      id: 15,
-      cliente: "Daniel Ortiz",
-      negocio: "Farmacia Vida",
-      estado: "En curso",
-      prioridad: "Media",
-      tiempo: "Hace 9 horas",
-      mensaje: "No puedo cambiar la contraseña."
-    },
-  ]);
+  // 🔥 CONEXIÓN BACKEND
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/tickets", {
+      headers: {
+        "Accept": "application/json",
+        "Authorization": "Bearer " + localStorage.getItem("token")
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        const formateados = data.map(t => ({
+          id: t.id,
+          cliente: t.cliente,
+          negocio: t.negocio?.nombre || "Sin negocio",
+          estado: t.estado,
+          prioridad: t.prioridad,
+          tiempo: "Reciente",
+          mensaje: t.mensaje
+        }));
+
+        setTickets(formateados);
+      })
+      .catch(err => {
+        console.error("Error cargando tickets:", err);
+      });
+  }, []);
 
   const ticketsFiltrados = useMemo(() => {
     return tickets.filter((t) => {

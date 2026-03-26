@@ -15,4 +15,9 @@ class Negocio extends Model
         'status',
         'iduser'
     ];
+    public function tickets()
+{
+    return $this->hasMany(Ticket::class, 'negocio_id');
 }
+}
+
