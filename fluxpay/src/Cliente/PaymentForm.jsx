@@ -27,23 +27,50 @@ const PaymentForm = ({ show, handleCerrar, handlesave }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-    handlesave({
-      ...state,
-      focus: "number",
-    });
+  if (!state.number || !state.expiry) {
+    alert("Completa los campos");
+    return;
+  }
 
-    // 🔄 Limpiar formulario
-    setState({
-      number: "",
-      expiry: "",
-      cvc: "",
-      name: "",
-      focus: "",
-    });
-  };
+  const clean = state.expiry.replace(/\D/g, ""); // solo números
+
+  if (clean.length !== 4) {
+    alert("Ingresa fecha como MMYY (ej: 0326)");
+    return;
+  }
+
+  const month = clean.substring(0, 2);
+  const year = clean.substring(2, 4);
+
+  if (parseInt(month) < 1 || parseInt(month) > 12) {
+    alert("Mes inválido");
+    return;
+  }
+
+  let brand = "unknown";
+  if (state.number.startsWith("4")) brand = "visa";
+  else if (state.number.startsWith("5")) brand = "mastercard";
+  else if (state.number.startsWith("3")) brand = "amex";
+
+  handlesave({
+    brand: brand,
+    last4: state.number.slice(-4),
+    exp_month: parseInt(month),
+    exp_year: 2000 + parseInt(year),
+    name: state.name,
+  });
+
+  setState({
+    number: "",
+    expiry: "",
+    cvc: "",
+    name: "",
+    focus: "",
+  });
+};
 
   return (
     <Modal show={show} onHide={handleCerrar} centered>
@@ -85,18 +112,6 @@ const PaymentForm = ({ show, handleCerrar, handlesave }) => {
                 className="form-control mb-3"
                 placeholder="MM/YY"
                 value={state.expiry}
-                onChange={handleInputChange}
-                onFocus={handleInputFocus}
-              />
-            </div>
-
-            <div className="col">
-              <input
-                type="tel"
-                name="cvc"
-                className="form-control mb-3"
-                placeholder="CVC"
-                value={state.cvc}
                 onChange={handleInputChange}
                 onFocus={handleInputFocus}
               />

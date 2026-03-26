@@ -1,6 +1,7 @@
 import { Modal, Button, Form } from "react-bootstrap";
 import { useState } from "react";
 import Swal from "sweetalert2";
+import Axios from "axios";
 
 const ChangeEmailModal = ({ show, handleClose, currentPassword, onSave }) => {
   const [email, setEmail] = useState("");
@@ -18,28 +19,33 @@ const ChangeEmailModal = ({ show, handleClose, currentPassword, onSave }) => {
       return;
     }
 
-    if (password !== currentPassword) {
+    // VALIDACIÓN REAL EN LARAVEL
+    Axios.put("http://127.0.0.1:8000/api/cliente/actualizar", {
+      current_password: password,
+      correo: email
+    })
+    .then(() => {
+      onSave(email);
+      handleClose();
+
+      Swal.fire({
+        icon: "success",
+        title: "Cambios guardados",
+        text: "El correo se actualizó correctamente.",
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#0d3b66"
+      });
+    })
+    .catch((err) => {
       Swal.fire({
         icon: "error",
         title: "Contraseña incorrecta",
-        text: "La contraseña actual no es correcta",
+        text: err.response?.data?.error || "Error",
         confirmButtonText: "Aceptar"
       });
-      return;
-    }
-
-    onSave(email);
-    handleClose();
-
-    Swal.fire({
-      icon: "success",
-      title: "Cambios guardados",
-      text: "El correo se actualizó correctamente.",
-      confirmButtonText: "Aceptar",
-      confirmButtonColor: "#0d3b66"
     });
   };
-
+  
   return (
     <Modal show={show} onHide={handleClose} centered backdrop="static">
       <Modal.Header closeButton>
