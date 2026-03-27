@@ -15,6 +15,7 @@ import {
   FaFileExcel,
   FaCog
 } from "react-icons/fa";
+import CerrarSesion from "../CerrarSesion";
 
 function ReportesGlobales() {
   const navigate = useNavigate();
@@ -146,8 +147,8 @@ function ReportesGlobales() {
             </li>
           </ul>
 
-          <div className="logout" onClick={() => navigate("/login")}>
-            <FaSignOutAlt /> Cerrar sesión
+          <div>
+            <CerrarSesion/>
           </div>
 
         </div>

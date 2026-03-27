@@ -15,6 +15,7 @@ import {
   FaUsers,
   FaCog
 } from "react-icons/fa";
+import CerrarSesion from "../CerrarSesion";
 
 export default function DashboardAdmin() {
 
@@ -105,11 +106,7 @@ export default function DashboardAdmin() {
             </li>
           </ul>
 
-          <div
-            className="logout"
-            onClick={() => navigate("/")}
-          >
-            <FaSignOutAlt /> Cerrar sesión
+          <div>   <CerrarSesion/>
           </div>
 
         </div>

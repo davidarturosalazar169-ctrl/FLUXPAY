@@ -18,4 +18,9 @@ public function negocio()
 {
     return $this->belongsTo(Negocio::class, 'negocio_id');
 }
+public function tickets()
+{
+    return $this->hasMany(\App\Models\Ticket::class, 'negocio_id');
 }
+}
+

@@ -7,24 +7,19 @@ import {
   FaStore,
   FaChartBar,
   FaHeadset,
-  FaSignOutAlt,
   FaCog
 } from "react-icons/fa";
+import CerrarSesion from "../CerrarSesion";
 
 export default function Soporte() {
   const navigate = useNavigate();
-
   const [filtro, setFiltro] = useState("Todos");
   const [busqueda, setBusqueda] = useState("");
   const [paginaActual, setPaginaActual] = useState(1);
-
   const ticketsPorPagina = 5;
-
-  // 🔥 AHORA VIENE DE LA API
   const [tickets, setTickets] = useState([]);
 
-  // 🔥 CONEXIÓN BACKEND
-  useEffect(() => {
+  const cargarTickets = () => {
     fetch("http://127.0.0.1:8000/api/tickets", {
       headers: {
         "Accept": "application/json",
@@ -42,117 +37,105 @@ export default function Soporte() {
           tiempo: "Reciente",
           mensaje: t.mensaje
         }));
-
         setTickets(formateados);
       })
-      .catch(err => {
-        console.error("Error cargando tickets:", err);
-      });
+      .catch(err => console.error(err));
+  };
+
+  useEffect(() => {
+    cargarTickets();
   }, []);
+
+  const cambiarEstado = async (id, nuevoEstado) => {
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/tickets/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        body: JSON.stringify({ estado: nuevoEstado })
+      });
+      if (!res.ok) throw new Error("Error al actualizar");
+      Swal.fire("Actualizado", "Estado cambiado correctamente", "success");
+      setTickets(prev => prev.map(t => t.id === id ? { ...t, estado: nuevoEstado } : t));
+    } catch (err) {
+      Swal.fire("Error", err.message, "error");
+    }
+  };
+
+  const cambiarPrioridad = async (id, nuevaPrioridad) => {
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/tickets/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        body: JSON.stringify({
+          estado: tickets.find(t => t.id === id).estado,
+          prioridad: nuevaPrioridad
+        })
+      });
+      if (!res.ok) throw new Error("Error al actualizar");
+      setTickets(prev => prev.map(t => t.id === id ? { ...t, prioridad: nuevaPrioridad } : t));
+      Swal.fire("Listo", "Prioridad actualizada", "success");
+    } catch (err) {
+      Swal.fire("Error", err.message, "error");
+    }
+  };
 
   const ticketsFiltrados = useMemo(() => {
     return tickets.filter((t) => {
-      const coincideBusqueda =
-        t.negocio.toLowerCase().includes(busqueda.toLowerCase()) ||
-        t.cliente.toLowerCase().includes(busqueda.toLowerCase());
-
-      const coincideFiltro =
-        filtro === "Todos" ||
-        t.estado === filtro ||
-        (filtro === "Importante" && t.prioridad === "Alta");
-
+      const coincideBusqueda = t.negocio.toLowerCase().includes(busqueda.toLowerCase()) ||
+                               t.cliente.toLowerCase().includes(busqueda.toLowerCase());
+      const coincideFiltro = filtro === "Todos" || t.estado === filtro || (filtro === "Importante" && t.prioridad === "Alta");
       return coincideBusqueda && coincideFiltro;
     });
   }, [tickets, busqueda, filtro]);
 
   const indiceUltimo = paginaActual * ticketsPorPagina;
   const indicePrimero = indiceUltimo - ticketsPorPagina;
-
   const ticketsActuales = ticketsFiltrados.slice(indicePrimero, indiceUltimo);
   const totalPaginas = Math.ceil(ticketsFiltrados.length / ticketsPorPagina);
-
-  const total = tickets.length;
-  const pendientes = tickets.filter((t) => t.estado === "Pendiente").length;
-  const enCurso = tickets.filter((t) => t.estado === "En curso").length;
-  const resueltas = tickets.filter((t) => t.estado === "Resuelto").length;
 
   const verTicket = (ticket) => {
     Swal.fire({
       title: `Ticket #${ticket.id}`,
-      html: `
-        <b>Cliente:</b> ${ticket.cliente}<br>
-        <b>Negocio:</b> ${ticket.negocio}<br><br>
-        <b>Problema:</b><br>${ticket.mensaje}
-      `,
+      html: `<b>Cliente:</b> ${ticket.cliente}<br><b>Negocio:</b> ${ticket.negocio}<br><br><b>Problema:</b><br>${ticket.mensaje}`,
       icon: "info",
-      confirmButtonText: "Cerrar",
-      confirmButtonColor: "#0d2b5c"
+      confirmButtonText: "Cerrar"
     });
   };
 
   return (
     <div className="admin-layout">
-
       <aside className="admin-sidebar">
-
         <div>
-
           <div className="admin-logo-container">
             <img src="/fluxpay.jpg" alt="FluxPay Logo" className="admin-logo" />
           </div>
-
           <ul className="sidebar-menu">
-
-            <li onClick={() => navigate("/admin/dashboard")}>
-              <FaHome /> Dashboard
-            </li>
-
-            <li onClick={() => navigate("/admin/negocios")}>
-              <FaStore /> Gestión Negocios
-            </li>
-
-            <li onClick={() => navigate("/admin/reportes")}>
-              <FaChartBar /> Reportes globales
-            </li>
-
-            <li className="active">
-              <FaHeadset /> Soporte
-            </li>
-
+            <li onClick={() => navigate("/admin/dashboard")}><FaHome /> Dashboard</li>
+            <li onClick={() => navigate("/admin/negocios")}><FaStore /> Gestión Negocios</li>
+            <li onClick={() => navigate("/admin/reportes")}><FaChartBar /> Reportes globales</li>
+            <li className="active"><FaHeadset /> Soporte</li>
           </ul>
-
         </div>
-
         <div>
-
           <ul className="sidebar-menu">
-
-            <li onClick={() => navigate("/admin/configuracion")}>
-              <FaCog /> Configuración
-            </li>
-
+            <li onClick={() => navigate("/admin/configuracion")}><FaCog /> Configuración</li>
           </ul>
-
-          <div
-            className="logout"
-            onClick={() => navigate("/")}
-            style={{ cursor: "pointer" }}
-          >
-            <FaSignOutAlt /> Cerrar sesión
-          </div>
-
+          <CerrarSesion/>
         </div>
-
       </aside>
 
       <div className="admin-main">
-
         <header className="header-wrapper">
           <div className="header-left">
             <h1>Centro soporte</h1>
             <p>Gestión dinámica de tickets</p>
           </div>
-
           <div className="header-user">
             <img src="https://i.pravatar.cc/40" alt="user" />
             <div>
@@ -163,41 +146,31 @@ export default function Soporte() {
         </header>
 
         <main className="admin-dashboard">
-
           <div className="soporte-stats">
-            <div>Total consultas: {total}</div>
-            <div>Pendientes: {pendientes}</div>
-            <div>En curso: {enCurso}</div>
-            <div>Resueltas: {resueltas}</div>
+            <div>Total consultas: {tickets.length}</div>
+            <div>Pendientes: {tickets.filter(t => t.estado === "Pendiente").length}</div>
+            <div>En curso: {tickets.filter(t => t.estado === "En curso").length}</div>
+            <div>Resueltas: {tickets.filter(t => t.estado === "Resuelto").length}</div>
           </div>
 
           <div className="soporte-filtros">
-
             <input
               placeholder="Buscar negocio o cliente"
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
             />
-
-            {["Todos", "Pendiente", "En curso", "Resuelto", "Importante"].map(
-              (tipo) => (
-                <button
-                  key={tipo}
-                  className={`btn ${filtro === tipo ? "active" : ""}`}
-                  onClick={() => {
-                    setFiltro(tipo);
-                    setPaginaActual(1);
-                  }}
-                >
-                  {tipo}
-                </button>
-              )
-            )}
-
+            {["Todos", "Pendiente", "En curso", "Resuelto", "Importante"].map((tipo) => (
+              <button
+                key={tipo}
+                className={`btn ${filtro === tipo ? "active" : ""}`}
+                onClick={() => { setFiltro(tipo); setPaginaActual(1); }}
+              >
+                {tipo}
+              </button>
+            ))}
           </div>
 
           <div className="tickets-table">
-
             <div className="table-header">
               <div>Cliente</div>
               <div>Estado</div>
@@ -208,71 +181,38 @@ export default function Soporte() {
 
             {ticketsActuales.map((t) => (
               <div key={t.id} className="table-row">
-
                 <div>
-                  <strong>{t.cliente}</strong>
-                  <br />
+                  <strong>{t.cliente}</strong><br />
                   <small>{t.negocio}</small>
                 </div>
-
                 <div>
                   <span className={`badge ${t.estado.toLowerCase().replace(" ","-")}`}>
                     {t.estado}
                   </span>
                 </div>
-
                 <div>
                   <span className={`badge prioridad ${t.prioridad.toLowerCase()}`}>
                     {t.prioridad}
                   </span>
                 </div>
-
                 <div>{t.tiempo}</div>
-
-                <div>
-                  <button
-                    className="btn-ver"
-                    onClick={() => verTicket(t)}
-                  >
-                    Ver ticket
-                  </button>
+                <div className="acciones">
+                  <button className="btn-ver" onClick={() => verTicket(t)}>Ver</button>
+                  <button className="btn-accion estado" onClick={() => cambiarEstado(t.id, "En curso")}>En curso</button>
+                  <button className="btn-accion resolver" onClick={() => cambiarEstado(t.id, "Resuelto")}>Resolver</button>
+                  <button className="btn-accion prioridad" onClick={() => cambiarPrioridad(t.id, "Alta")}>Alta</button>
                 </div>
-
               </div>
             ))}
-
           </div>
 
           <div className="pagination">
-
-            <button
-              className="page-btn"
-              onClick={() => setPaginaActual(paginaActual - 1)}
-              disabled={paginaActual === 1}
-            >
-              {"<"}
-            </button>
-
+            <button className="page-btn" onClick={() => setPaginaActual(paginaActual - 1)} disabled={paginaActual === 1}>{"<"}</button>
             {[...Array(totalPaginas)].map((_, i) => (
-              <button
-                key={i}
-                className={`page-btn ${paginaActual === i + 1 ? "active" : ""}`}
-                onClick={() => setPaginaActual(i + 1)}
-              >
-                {i + 1}
-              </button>
+              <button key={i} className={`page-btn ${paginaActual === i + 1 ? "active" : ""}`} onClick={() => setPaginaActual(i + 1)}>{i + 1}</button>
             ))}
-
-            <button
-              className="page-btn"
-              onClick={() => setPaginaActual(paginaActual + 1)}
-              disabled={paginaActual === totalPaginas}
-            >
-              {">"}
-            </button>
-
+            <button className="page-btn" onClick={() => setPaginaActual(paginaActual + 1)} disabled={paginaActual === totalPaginas}>{">"}</button>
           </div>
-
         </main>
       </div>
     </div>

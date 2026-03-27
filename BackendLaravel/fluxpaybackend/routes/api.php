@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\NegocioController;
 use App\Http\Controllers\Api\AdminController;
-
+use App\Http\Controllers\Api\TicketController;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -40,6 +40,10 @@ Route::middleware('auth:sanctum')->group(function () {
 // 🔥 SOLO ADMIN
 Route::middleware(['auth:sanctum', 'rol:1'])->group(function () {
     Route::get('/admin-negocios', [NegocioController::class, 'index']);
+});
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('negocios', NegocioController::class);
+    Route::apiResource('tickets', TicketController::class);
 });
 
 use App\Http\Controllers\TarjetaClienteController;
