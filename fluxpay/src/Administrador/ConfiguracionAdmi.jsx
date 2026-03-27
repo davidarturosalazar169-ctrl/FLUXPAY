@@ -10,7 +10,7 @@ import {
   FaSignOutAlt,
   FaCog
 } from "react-icons/fa";
-
+import CerrarSesion from "../CerrarSesion";
 export default function ConfiguracionAdmi() {
 
   const navigate = useNavigate();
@@ -210,15 +210,7 @@ export default function ConfiguracionAdmi() {
             </li>
           </ul>
 
-          <div
-            className="logout"
-            onClick={() => {
-              localStorage.removeItem("token");
-              navigate("/");
-            }}
-            style={{ cursor: "pointer" }}
-          >
-            <FaSignOutAlt /> Cerrar sesión
+          <div> <CerrarSesion/>
           </div>
 
         </div>
