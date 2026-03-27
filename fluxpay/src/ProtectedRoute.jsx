@@ -4,7 +4,7 @@ export default function ProtectedRoute({ children, rolPermitido }) {
 
   const token = localStorage.getItem("token");
 
-  // 🔒 sin token → fuera
+  //  sin token → fuera
   if (!token) {
     return <Navigate to="/" replace />;
   }
@@ -18,17 +18,17 @@ export default function ProtectedRoute({ children, rolPermitido }) {
     return <Navigate to="/" replace />;
   }
 
-  // 🔒 sin user → fuera
+  // sin user → fuera
   if (!user) {
     return <Navigate to="/" replace />;
   }
 
-  // 🔒 sin rol → fuera
+  // sin rol → fuera
   if (!user.idrol) {
     return <Navigate to="/" replace />;
   }
 
-  // 🔒 rol incorrecto → fuera
+  // rol incorrecto → fuera
   if (rolPermitido && user.idrol !== rolPermitido) {
     return <Navigate to="/" replace />;
   }

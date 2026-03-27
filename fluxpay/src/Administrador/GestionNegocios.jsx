@@ -11,6 +11,7 @@ import {
   FaCog,
 } from "react-icons/fa";
 import "./GestionNegocios.css";
+import CerrarSesion from "../CerrarSesion";
 
 export default function GestionNegocios() {
   const navigate = useNavigate();
@@ -167,7 +168,7 @@ export default function GestionNegocios() {
           <ul className="sidebar-menu">
             <li onClick={() => navigate("/admin/configuracion")}><FaCog /> Configuración</li>
           </ul>
-          <div className="logout" onClick={() => navigate("/")}><FaSignOutAlt /> Cerrar sesión</div>
+          <div> <CerrarSesion/> </div>
         </div>
       </aside>
 
