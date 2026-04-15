@@ -84,15 +84,24 @@ Route::apiResource('marcas', MarcaController::class);
 
 use App\Http\Controllers\Api\TiendaClienteDashController;
 
-// Rutas protegidas por Sanctum
-Route::prefix('tienda/dashboard')->group(function () {
-    Route::get('productos', [TiendaClienteDashController::class, 'productos']);
-    Route::get('ingresos', [TiendaClienteDashController::class, 'ingresos']);
-    Route::get('resumen', [TiendaClienteDashController::class, 'resumen']);
+// ¡ESTO ES VITAL! El middleware auth:sanctum debe envolver las rutas
+Route::middleware('auth:sanctum')->group(function () {
+    
+    Route::prefix('tienda/dashboard')->group(function () {
+        Route::get('productos', [TiendaClienteDashController::class, 'productos']);
+        Route::get('ingresos', [TiendaClienteDashController::class, 'ingresos']);
+        Route::get('resumen', [TiendaClienteDashController::class, 'resumen']);
+    });
+    
 });
-
 
 use App\Http\Controllers\Api\GenerarTicketController;
 
 Route::get('/tickets', [GenerarTicketController::class, 'index']);
 Route::post('/tickets', [GenerarTicketController::class, 'store']);
+
+
+//historial
+use App\Http\Controllers\Api\MovimientoController; // Nota el "\Api\"
+
+Route::get('/movimientos', [MovimientoController::class, 'index']);

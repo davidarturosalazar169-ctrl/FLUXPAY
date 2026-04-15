@@ -13,16 +13,23 @@ class TiendaClienteDashController extends Controller
      * Función privada para obtener el ID real del negocio.
      * Basado en tu tabla 'negocio', buscamos el 'id' donde 'iduser' sea el del usuario actual.
      */
-    private function getNegocioId(Request $request) 
-    {
-        $user = $request->user();
-        // En tu tabla 'negocio', la columna es 'iduser' (ej. 81, 82...)
-        $negocio = DB::table('negocio')->where('iduser', $user->id)->first();
-        
-        // Si no encuentra el negocio, devolvemos null
-        return $negocio ? $negocio->id : null;
+private function getNegocioId(Request $request) 
+{
+    $user = $request->user();
+    
+    if (!$user) {
+        throw new \Exception("Usuario no autenticado.");
     }
 
+    $negocio = DB::table('negocio')->where('iduser', $user->id)->first();
+    
+    // CAMBIO TEMPORAL PARA DEBUGEAR:
+    if (!$negocio) {
+        throw new \Exception("El usuario ID: " . $user->id . " no tiene nada en la tabla 'negocio' bajo la columna 'iduser'");
+    }
+
+    return $negocio->id;
+}
     // 1. PRODUCTOS: Basado en tu tabla 'productos'
     public function productos(Request $request)
     {
@@ -68,25 +75,28 @@ class TiendaClienteDashController extends Controller
 
     // 3. RESUMEN: Calcula totales para las cards del dashboard
     public function resumen(Request $request)
-    {
-        try {
-            $idNegocio = $this->getNegocioId($request);
+{
+    try {
+        $idNegocio = $this->getNegocioId($request);
+        if (!$idNegocio) return response()->json(['total' => 0, 'efectivo' => 0, 'qr' => 0]);
 
-            if (!$idNegocio) return response()->json(['total' => 0, 'efectivo' => 0, 'qr' => 0]);
+        $efectivo = DB::table('movimiento')
+            ->where('idnegocio', $idNegocio)
+            ->where('metodo_pago', 'efectivo')
+            ->sum('monto_total') ?? 0;
 
-            $baseQuery = DB::table('movimiento')->where('idnegocio', $idNegocio);
+        $qr = DB::table('movimiento')
+            ->where('idnegocio', $idNegocio)
+            ->where('metodo_pago', 'qr')
+            ->sum('monto_total') ?? 0;
 
-            // Filtramos exactamente como están tus strings en la DB
-            $efectivo = (clone $baseQuery)->where('metodo_pago', 'efectivo')->sum('monto_total') ?? 0;
-            $qr = (clone $baseQuery)->where('metodo_pago', 'qr')->sum('monto_total') ?? 0;
-
-            return response()->json([
-                'total' => (float)($efectivo + $qr),
-                'efectivo' => (float)$efectivo,
-                'qr' => (float)$qr
-            ]);
-        } catch (Exception $e) {
-            return response()->json(['error' => 'Error en Resumen: ' . $e->getMessage()], 500);
-        }
+        return response()->json([
+            'total' => (float)($efectivo + $qr),
+            'efectivo' => (float)$efectivo,
+            'qr' => (float)$qr
+        ]);
+    } catch (Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
     }
+}
 }
