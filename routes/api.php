@@ -77,7 +77,7 @@ Route::middleware(['auth:sanctum', 'rol:1'])->group(function () {
 Route::middleware('auth:sanctum')->get('/tarjetas', [TarjetaClienteController::class, 'listado']);
 Route::middleware('auth:sanctum')->post('/tarjetas', [TarjetaClienteController::class, 'guardar']);
 Route::middleware('auth:sanctum')->delete('/tarjetas/{id}', [TarjetaClienteController::class, 'eliminar']);
-
+// hasgdhjasdhakjsdhask
 /*
 |--------------------------------------------------------------------------
 | CLIENTES
