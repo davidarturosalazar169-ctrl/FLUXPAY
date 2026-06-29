@@ -129,3 +129,9 @@ Route::post('/tickets', [GenerarTicketController::class, 'store']);
 use App\Http\Controllers\Api\MovimientoController; // Nota el "\Api\"
 
 Route::get('/movimientos', [MovimientoController::class, 'index']);
+
+use App\Http\Controllers\StripeController;
+
+Route::post('/create-payment', [StripeController::class, 'createPayment']);
+Route::post('/save-movimiento', [StripeController::class, 'saveMovimiento']);
+Route::get('/crear-cuenta-prueba', [StripeController::class, 'crearCuentaPrueba']);
