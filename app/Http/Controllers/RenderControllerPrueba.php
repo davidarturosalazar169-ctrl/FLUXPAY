@@ -48,4 +48,14 @@ class RenderControllerPrueba extends Controller
             ], 500);
         }
     }
+    public function drivers(): JsonResponse
+{
+    return response()->json([
+        'php' => PHP_VERSION,
+        'pdo' => extension_loaded('pdo'),
+        'pdo_pgsql' => extension_loaded('pdo_pgsql'),
+        'pgsql' => extension_loaded('pgsql'),
+        'drivers' => \PDO::getAvailableDrivers(),
+    ]);
+}
 }
