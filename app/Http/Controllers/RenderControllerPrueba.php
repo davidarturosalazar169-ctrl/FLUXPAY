@@ -27,4 +27,25 @@ class RenderControllerPrueba extends Controller
             ], 500);
         }
     }
+
+    public function renderStatus(): JsonResponse
+    {
+        try {
+            DB::select('SELECT 1');
+
+            return response()->json([
+                'status' => true,
+                'mensaje' => ' SI ESTÁS CONECTADO AL RENDER',
+                'database' => DB::connection()->getDatabaseName(),
+                'driver' => DB::connection()->getDriverName(),
+                'time' => now(),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'mensaje' => '🔴 NO ESTÁS CONECTADO AL RENDER',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
