@@ -135,3 +135,15 @@ use App\Http\Controllers\StripeController;
 Route::post('/create-payment', [StripeController::class, 'createPayment']);
 Route::post('/save-movimiento', [StripeController::class, 'saveMovimiento']);
 Route::get('/crear-cuenta-prueba', [StripeController::class, 'crearCuentaPrueba']);
+
+
+// Asegúrate de que las rutas apunten exactamente a tu controlador
+Route::post('/api/create-payment', [StripeController::class, 'createPayment']);
+Route::post('/api/save-movimiento', [StripeController::class, 'saveMovimiento']);
+
+//rutas nuevas para el stripe dejarlo como david
+use App\Http\Controllers\StripeQrController;
+Route::post('/crear-checkout',[StripeQrController::class,'crearCheckout']);
+
+
+Route::post('/confirmar-pago-stripe',[StripeQrController::class,'confirmarPago']);
