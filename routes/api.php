@@ -154,9 +154,10 @@ Route::post('/create-payment', [StripeController::class, 'createPayment']);
 Route::post('/save-movimiento', [StripeController::class, 'saveMovimiento']);
 Route::get('/crear-cuenta-prueba', [StripeController::class, 'crearCuentaPrueba']);
 
-use App\Http\Controllers\RenderControllerPrueba;
 
-Route::get('/render-prueba', [RenderControllerPrueba::class, 'ping']);
+// Asegúrate de que las rutas apunten exactamente a tu controlador
+Route::post('/api/create-payment', [StripeController::class, 'createPayment']);
+Route::post('/api/save-movimiento', [StripeController::class, 'saveMovimiento']);
 
 Route::get('/render-status', [RenderControllerPrueba::class, 'renderStatus']);
 
