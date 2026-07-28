@@ -159,3 +159,9 @@ use App\Http\Controllers\RenderControllerPrueba;
 Route::get('/render-prueba', [RenderControllerPrueba::class, 'ping']);
 
 Route::get('/render-status', [RenderControllerPrueba::class, 'renderStatus']);
+
+use App\Http\Controllers\StripeQRController;
+
+Route::post('/crear-checkout', [StripeQRController::class, 'crearCheckout']);
+
+Route::post('/confirmar-pago-stripe', [StripeQRController::class, 'confirmarPago']);
