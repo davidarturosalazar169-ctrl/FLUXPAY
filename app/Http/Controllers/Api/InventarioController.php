@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Inventario;
 use App\Models\Producto;
+use Illuminate\Http\Request;
 
 class InventarioController extends Controller
 {
@@ -32,6 +33,24 @@ class InventarioController extends Controller
     ]);
 
 }
+
+    public function update(Request $request, Inventario $inventario)
+    {
+        $validated = $request->validate([
+            'stock' => 'required|integer|min:0',
+            'stock_minimo' => 'required|integer|min:0',
+            'en_produccion' => 'required|integer|min:0',
+        ]);
+
+        $inventario->fill($validated);
+        $inventario->estado = $this->calcularEstado(
+            $inventario->stock,
+            $inventario->stock_minimo
+        );
+        $inventario->save();
+
+        return response()->json($inventario->load(['producto', 'negocio']));
+    }
 
     // Sincronizar productos existentes
     public function sincronizar()
@@ -62,24 +81,17 @@ class InventarioController extends Controller
         ]);
     }
 
-    private function actualizarEstado($inventario)
+    private function calcularEstado($stock, $stockMinimo)
 {
+        if ($stock <= 0) {
+            return "Agotado";
+        }
 
-    if($inventario->stock<=0){
+        if ($stock <= $stockMinimo) {
+            return "Bajo";
+        }
 
-        $inventario->estado="Agotado";
-
-    }elseif($inventario->stock<=$inventario->stock_minimo){
-
-        $inventario->estado="Bajo";
-
-    }else{
-
-        $inventario->estado="Disponible";
-
-    }
-
-    $inventario->save();
+        return "Disponible";
 
 }
 }
