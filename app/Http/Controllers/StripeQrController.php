@@ -12,6 +12,8 @@ class StripeQRController extends Controller
 {
 
 
+
+
     // CREAR PEDIDO ANTES DEL QR
     public function crearPedido(Request $request)
     {
