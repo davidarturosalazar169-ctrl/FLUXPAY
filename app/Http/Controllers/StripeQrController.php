@@ -11,9 +11,6 @@ use Stripe\PaymentIntent;
 class StripeQRController extends Controller
 {
 
-
-
-
     // CREAR PEDIDO ANTES DEL QR
     public function crearPedido(Request $request)
     {
@@ -241,6 +238,13 @@ class StripeQRController extends Controller
 
         $metadata = $paymentIntent->metadata;
 
+        DB::table('pedidos')
+    ->where('id', $metadata->pedido_id)
+    ->update([
+        'status' => 'pagado',
+        'updated_at' => now()
+    ]);
+
 
 
         $productos=json_decode(
@@ -346,9 +350,6 @@ class StripeQRController extends Controller
 
         ]);
 
-
-
     }
-
 
 }
