@@ -105,251 +105,121 @@ class StripeQRController extends Controller
 
 
     }
+public function confirmarPago(Request $request)
+{
+    Stripe::setApiKey(env('STRIPE_SECRET'));
 
+    $paymentIntent = PaymentIntent::retrieve(
+        $request->payment_intent
+    );
 
-
-
-
-
-    public function crearCheckout(Request $request)
-    {
-
-        Stripe::setApiKey(env('STRIPE_SECRET'));
-
-
-        $productos = $request->productos;
-
-
-        $monto = $request->total * 100;
-
-
-
-        $paymentIntent = PaymentIntent::create([
-
-
-            'amount'=>$monto,
-
-
-            'currency'=>'mxn',
-
-
-            'payment_method_types'=>[
-
-                'card'
-
-            ],
-
-
-
-            'metadata'=>[
-
-
-                'idnegocio'=>$request->idnegocio,
-
-
-                'iduser'=>$request->iduser,
-
-
-                'pedido_id'=>$request->pedido_id,
-
-
-                'productos'=>json_encode($productos)
-
-
-            ]
-
-
-        ]);
-
-
-
+    if ($paymentIntent->status != "succeeded") {
 
         return response()->json([
-
-            'client_secret'=>$paymentIntent->client_secret,
-
-            'payment_intent_id'=>$paymentIntent->id
-
+            "status" => $paymentIntent->status
         ]);
-
-
     }
 
+    $metadata = $paymentIntent->metadata;
 
+    // VERIFICAR QUE STRIPE TENGA EL PEDIDO
+    if (empty($metadata->pedido_id)) {
 
+        return response()->json([
+            "error" => "El PaymentIntent no tiene pedido_id en metadata"
+        ], 400);
+    }
 
+    // CAMBIAR PEDIDO A PAGADO
+    DB::table('pedidos')
+        ->where('id', $metadata->pedido_id)
+        ->update([
+            'status' => 'pagado',
+            'updated_at' => now()
+        ]);
 
-
-
-    public function confirmarPago(Request $request)
-    {
-
-
-        Stripe::setApiKey(env('STRIPE_SECRET'));
-
-
-
-        $paymentIntent = PaymentIntent::retrieve(
-
-            $request->payment_intent
-
-        );
-
-
-
-        if($paymentIntent->status != "succeeded"){
-
-
-            return response()->json([
-
-                "status"=>$paymentIntent->status
-
-            ]);
-
-
-        }
-
-
-
-        $existe = DB::table('movimiento')
+    // BUSCAR SI EL MOVIMIENTO YA EXISTE
+    $existe = DB::table('movimiento')
         ->where(
             'stripe_payment_intent',
             $paymentIntent->id
         )
         ->first();
 
-
-
-        if($existe){
-
-
-            return response()->json([
-
-                "status"=>"already_saved",
-
-                "movimiento_id"=>$existe->id
-
-            ]);
-
-
-        }
-
-
-
-        $metadata = $paymentIntent->metadata;
-
-        DB::table('pedidos')
-    ->where('id', $metadata->pedido_id)
-    ->update([
-        'status' => 'pagado',
-        'updated_at' => now()
-    ]);
-
-
-
-        $productos=json_decode(
-
-            $metadata->productos,
-
-            true
-
-        );
-
-
-
-
-        $movimiento=DB::table('movimiento')->insertGetId([
-
-
-            'idnegocio'=>$metadata->idnegocio,
-
-
-            'iduser'=>$metadata->iduser,
-
-
-            'monto_total'=>$paymentIntent->amount / 100,
-
-
-            'comision'=>0,
-
-
-            'metodo_pago'=>'tarjeta',
-
-
-            'referencia_pago'=>$paymentIntent->id,
-
-
-            'stripe_payment_intent'=>$paymentIntent->id,
-
-
-            'stripe_status'=>$paymentIntent->status,
-
-
-            'status'=>1,
-
-
-            'fecha_movimiento'=>now(),
-
-
-            'created_at'=>now(),
-
-
-            'updated_at'=>now()
-
-
-        ]);
-
-
-
-
-
-        foreach($productos as $producto){
-
-
-
-            DB::table('detalle_movimientos')->insert([
-
-
-                'idmovimiento'=>$movimiento,
-
-
-                'idproducto'=>$producto['idproducto'],
-
-
-                'cantidad'=>$producto['cantidad'],
-
-
-                'precio_unitario'=>$producto['precio'],
-
-
-                'subtotal'=>$producto['subtotal'],
-
-
-                'status'=>1,
-
-
-                'created_at'=>now(),
-
-
-                'updated_at'=>now()
-
-
-            ]);
-
-
-        }
-
-
-
+    if ($existe) {
 
         return response()->json([
+            "status" => "already_saved",
+            "movimiento_id" => $existe->id,
+            "pedido_id" => $metadata->pedido_id
+        ]);
+    }
 
-            "status"=>"succeeded",
+    $productos = json_decode(
+        $metadata->productos,
+        true
+    );
 
-            "movimiento_id"=>$movimiento
+    $movimiento = DB::table('movimiento')->insertGetId([
+
+        'idnegocio' => $metadata->idnegocio,
+
+        'iduser' => $metadata->iduser,
+
+        'monto_total' => $paymentIntent->amount / 100,
+
+        'comision' => 0,
+
+        'metodo_pago' => 'tarjeta',
+
+        'referencia_pago' => $paymentIntent->id,
+
+        'stripe_payment_intent' => $paymentIntent->id,
+
+        'stripe_status' => $paymentIntent->status,
+
+        'status' => 1,
+
+        'fecha_movimiento' => now(),
+
+        'created_at' => now(),
+
+        'updated_at' => now()
+
+    ]);
+
+    foreach ($productos as $producto) {
+
+        DB::table('detalle_movimientos')->insert([
+
+            'idmovimiento' => $movimiento,
+
+            'idproducto' => $producto['idproducto'],
+
+            'cantidad' => $producto['cantidad'],
+
+            'precio_unitario' => $producto['precio'],
+
+            'subtotal' => $producto['subtotal'],
+
+            'status' => 1,
+
+            'created_at' => now(),
+
+            'updated_at' => now()
 
         ]);
-
     }
+
+    return response()->json([
+
+        "status" => "succeeded",
+
+        "movimiento_id" => $movimiento,
+
+        "pedido_id" => $metadata->pedido_id
+
+    ]);
+}
 
 }
