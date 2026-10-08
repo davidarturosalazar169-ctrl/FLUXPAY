@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\GenerarTicketController;
 use App\Http\Controllers\Api\MovimientoController;
 use App\Http\Controllers\StripeController;
 use App\Http\Controllers\Api\InventarioController;
+use App\Http\Controllers\Api\AdminNotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,9 +56,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/admin', [AdminController::class, 'update']);
 
     Route::apiResource('negocios', NegocioController::class);
+    Route::apiResource('productos', ProductoController::class);
 
     Route::apiResource('tickets', TicketController::class);
     Route::get('/inventario', [InventarioController::class, 'index']);
+    Route::put('/inventario/{inventario}', [InventarioController::class, 'update']);
 
     Route::post('/logout', [AuthController::class, 'logout']);
 });
@@ -69,6 +72,9 @@ Route::middleware('auth:sanctum')->group(function () {
 */
 Route::middleware(['auth:sanctum', 'rol:1'])->group(function () {
     Route::get('/admin-negocios', [NegocioController::class, 'index']);
+    Route::get('/admin/notificaciones', [AdminNotificationController::class, 'index']);
+    Route::patch('/admin/notificaciones/{notification}/leer', [AdminNotificationController::class, 'markAsRead']);
+    Route::patch('/admin/notificaciones/leer-todas', [AdminNotificationController::class, 'markAllAsRead']);
 });
 //INVENTARIO
 Route::get('/inventario', [InventarioController::class, 'index']);
@@ -116,7 +122,6 @@ Route::delete('/clientes/{id}', [ClienteController::class, 'destroy']);
 | PRODUCTOS Y MARCAS
 |--------------------------------------------------------------------------
 */
-Route::apiResource('productos', ProductoController::class);
 Route::apiResource('marcas', MarcaController::class);
 
 /*
