@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Negocio;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use App\Models\Rol;
@@ -18,7 +19,13 @@ class AuthController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
-            'rol' => 'required'
+            'rol' => 'required|in:negocio,cliente',
+            'negocio' => 'required_if:rol,negocio|array',
+            'negocio.nombre' => 'required_if:rol,negocio|string|max:150',
+            'negocio.telefono' => 'nullable|string|max:25',
+            'negocio.descripcion' => 'nullable|string|max:1000',
+            'negocio.rfc' => 'nullable|string|max:20',
+            'negocio.codigo_postal' => 'nullable|string|max:10',
         ]);
 
         $idrol = match($request->rol) {
@@ -28,20 +35,29 @@ class AuthController extends Controller
             default => 9
         };
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+        $user = DB::transaction(function () use ($request, $idrol) {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => $request->password,
+                'idrol' => $idrol
+            ]);
 
-            //
-            'password' => $request->password,
+            if ($request->rol === 'negocio') {
+                Negocio::create([
+                    ...$request->input('negocio'),
+                    'iduser' => $user->id,
+                    'status' => 1
+                ]);
+            }
 
-            'idrol' => $idrol
-        ]);
+            return $user;
+        });
 
         return response()->json([
             'message' => 'Usuario registrado correctamente',
             'user' => $user
-        ]);
+        ], 201);
     }
 
    public function login(Request $request)
@@ -76,6 +92,10 @@ class AuthController extends Controller
         ->where('rolxpermiso.idrol', $user->idrol)
         ->pluck('clave');
 
+    $negocio = $user->idrol == 8
+        ? Negocio::where('iduser', $user->id)->first(['id', 'nombre', 'telefono'])
+        : null;
+
     return response()->json([
         'token' => $token,
 
@@ -85,7 +105,8 @@ class AuthController extends Controller
             'email' => $user->email,
             'idrol' => $user->idrol,
             'rol' => $rol->nombre,
-            'permisos' => $permisos
+            'permisos' => $permisos,
+            'negocio' => $negocio
         ]
     ]);
 }

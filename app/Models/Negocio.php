@@ -12,6 +12,8 @@ class Negocio extends Model
         'nombre',
         'descripcion',
         'telefono',
+        'rfc',
+        'codigo_postal',
         'status',
         'iduser'
     ];
@@ -29,4 +31,3 @@ public function inventarios()
     return $this->hasMany(Inventario::class, 'idnegocio');
 }
 }
-

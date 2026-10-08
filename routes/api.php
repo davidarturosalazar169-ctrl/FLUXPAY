@@ -56,6 +56,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/admin', [AdminController::class, 'update']);
 
     Route::apiResource('negocios', NegocioController::class);
+    Route::apiResource('productos', ProductoController::class);
 
     Route::apiResource('tickets', TicketController::class);
     Route::get('/inventario', [InventarioController::class, 'index']);
@@ -121,7 +122,6 @@ Route::delete('/clientes/{id}', [ClienteController::class, 'destroy']);
 | PRODUCTOS Y MARCAS
 |--------------------------------------------------------------------------
 */
-Route::apiResource('productos', ProductoController::class);
 Route::apiResource('marcas', MarcaController::class);
 
 /*
