@@ -121,7 +121,10 @@ Route::delete('/clientes/{id}', [ClienteController::class, 'destroy']);
 | PRODUCTOS Y MARCAS
 |--------------------------------------------------------------------------
 */
-Route::apiResource('productos', ProductoController::class);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('productos', ProductoController::class);
+});
+
 Route::apiResource('marcas', MarcaController::class);
 
 /*
