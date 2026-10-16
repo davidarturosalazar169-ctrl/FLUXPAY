@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Ticket; // <-- Ahora sí coincide
+use App\Models\User;
+use App\Notifications\BusinessEventNotification;
 use Illuminate\Support\Facades\Log;
 
 class GenerarTicketController extends Controller 
@@ -30,6 +32,15 @@ class GenerarTicketController extends Controller
                 'estado'     => 'Pendiente',
                 'negocio_id' => 1,
             ]);
+
+            User::where('idrol', 1)->get()->each(function (User $admin) use ($ticket) {
+                $admin->notify(new BusinessEventNotification(
+                    'Nuevo evento de negocio',
+                    "El negocio #{$ticket->negocio_id} creó un ticket con prioridad {$ticket->prioridad}.",
+                    'business_ticket_created'
+                ));
+            });
+
             return response()->json($ticket, 201);
         } catch (\Exception $e) {
             Log::error("Error en Ticket Store: " . $e->getMessage());

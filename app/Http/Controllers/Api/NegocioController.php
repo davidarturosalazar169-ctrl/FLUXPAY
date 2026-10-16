@@ -28,7 +28,7 @@ class NegocioController extends Controller
             'nombre' => 'required',
             'descripcion' => 'nullable',
             'telefono' => 'nullable',
-            'status' => 'nullable',
+            'status' => 'nullable|integer|in:0,1,2',
         ]);
 
         $negocio = Negocio::create([
@@ -52,6 +52,19 @@ class NegocioController extends Controller
         }
 
         $negocio = $query->firstOrFail();
+
+        if ($request->has('status') && $request->user()->idrol != 1) {
+            return response()->json([
+                'message' => 'Solo un administrador puede cambiar el estado del negocio.'
+            ], 403);
+        }
+
+        $request->validate([
+            'nombre' => 'required',
+            'descripcion' => 'nullable',
+            'telefono' => 'nullable',
+            'status' => 'nullable|integer|in:0,1,2',
+        ]);
 
         $negocio->update([
             'nombre' => $request->nombre,
