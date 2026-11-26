@@ -14,17 +14,12 @@ class ApiQrController extends Controller
         ]);
     }
 
-    public function recibirSolicitud(Request $request)
-    {
-        $datos = $request->validate([
-            'monto' => 'required|numeric|min:1',
-            'referencia_externa' => 'required|string|max:100',
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'mensaje' => 'Solicitud recibida correctamente',
-            'datos_recibidos' => $datos,
-        ]);
-    }
+public function recibirSolicitud(Request $request)
+{
+    return response()->json([
+        'success' => true,
+        'mensaje' => 'POST recibido correctamente desde ImpulsaPay',
+        'datos' => $request->all(),
+    ]);
+}
 }
