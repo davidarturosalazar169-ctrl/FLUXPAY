@@ -242,3 +242,21 @@ Route::post('/crear-pago-oxxo', [
     StripeOxxoController::class,
     'crear'
 ]);
+
+
+use App\Http\Controllers\ApiKeyController;
+
+Route::prefix('integraciones')->group(function () {
+
+    Route::post('/api-keys', [ApiKeyController::class, 'generar']);
+
+    Route::get('/api-keys', [ApiKeyController::class, 'listar']);
+
+    Route::put('/api-keys/{id}/revocar', [ApiKeyController::class, 'revocar']);
+
+});
+
+use App\Http\Controllers\ApiQrController;
+
+Route::post('/integraciones/crear-qr', [ApiQrController::class, 'crear']);
+Route::get('/integraciones/prueba-qr', [ApiQrController::class, 'prueba']);
