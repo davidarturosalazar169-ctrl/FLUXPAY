@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\MovimientoController;
 use App\Http\Controllers\StripeController;
 use App\Http\Controllers\Api\InventarioController;
 use App\Http\Controllers\Api\AdminNotificationController;
+use App\Http\Controllers\RenderControllerPrueba;
 
 /*
 |--------------------------------------------------------------------------
@@ -186,3 +187,58 @@ Route::get(
 Route::post('/crear-checkout', [StripeQRController::class, 'crearCheckout']);
 
 Route::post('/confirmar-pago-stripe', [StripeQRController::class, 'confirmarPago']);
+
+use App\Http\Controllers\ClienteNegocioController;
+
+Route::get('/clientes-negocios', [
+    ClienteNegocioController::class,
+    'index'
+]);
+
+Route::post('/clientes-negocios', [
+    ClienteNegocioController::class,
+    'store'
+]);
+Route::put('/clientes-negocios/{id}', [
+    ClienteNegocioController::class,
+    'update'
+]);
+
+Route::delete('/clientes-negocios/{id}', [
+    ClienteNegocioController::class,
+    'destroy'
+]);
+
+
+use App\Http\Controllers\PuntosClienteController;
+
+// Sistema de puntos de clientes
+Route::get('/clientes-negocios/{id}/puntos', [
+    PuntosClienteController::class,
+    'consultar'
+]);
+
+Route::post('/clientes-negocios/puntos/acumular', [
+    PuntosClienteController::class,
+    'acumular'
+]);
+
+Route::post('/clientes-negocios/puntos/canjear', [
+    PuntosClienteController::class,
+    'canjear'
+]);
+
+Route::get('/clientes-negocios/puntos/configuracion', [PuntosClienteController::class, 'consultarConfiguracion']);
+
+Route::post('/clientes-negocios/puntos/configuracion', [PuntosClienteController::class, 'guardarConfiguracion']);
+
+use App\Http\Controllers\MetabaseController;
+
+Route::get('/metabase/token', [MetabaseController::class, 'token']);
+
+use App\Http\Controllers\StripeOxxoController;
+
+Route::post('/crear-pago-oxxo', [
+    StripeOxxoController::class,
+    'crear'
+]);

@@ -1,0 +1,32 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('clientes_negocios', function (Blueprint $table) {
+            $table->dropForeign('clientes_negocios_idnegocio_foreign');
+
+            $table->foreign('idnegocio')
+                ->references('id')
+                ->on('negocio')
+                ->cascadeOnDelete();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('clientes_negocios', function (Blueprint $table) {
+            $table->dropForeign('clientes_negocios_idnegocio_foreign');
+
+            $table->foreign('idnegocio')
+                ->references('id')
+                ->on('negocios')
+                ->cascadeOnDelete();
+        });
+    }
+};

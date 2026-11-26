@@ -348,5 +348,101 @@ class StripeQRController extends Controller
 
     }
 
+public function guardarTransaccionQR(Request $request)
+{
+    $request->validate([
+        'payment_intent' => ['required', 'string'],
+    ]);
+
+    try {
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        // Verificar el pago directamente con Stripe
+        $paymentIntent = PaymentIntent::retrieve(
+            $request->payment_intent
+        );
+
+        if ($paymentIntent->status !== 'succeeded') {
+            return response()->json([
+                'message' => 'El pago todavía no ha sido confirmado.',
+                'status' => $paymentIntent->status
+            ], 400);
+        }
+
+        $metadata = $paymentIntent->metadata;
+
+        $productos = json_decode(
+            $metadata->productos ?? '[]',
+            true
+        );
+
+        if (empty($productos)) {
+            return response()->json([
+                'message' => 'No se encontraron productos.'
+            ], 422);
+        }
+
+        $resultado = DB::transaction(function () use (
+            $paymentIntent,
+            $metadata,
+            $productos
+        ) {
+            // Evitar movimientos duplicados
+            $existe = DB::table('movimiento')
+                ->where('stripe_payment_intent', $paymentIntent->id)
+                ->first();
+
+            if ($existe) {
+                return [
+                    'status' => 'already_saved',
+                    'movimiento_id' => $existe->id
+                ];
+            }
+
+            // Guardar movimiento
+            $movimiento = DB::table('movimiento')->insertGetId([
+                'idnegocio' => $metadata->idnegocio,
+                'iduser' => $metadata->iduser,
+                'monto_total' => $paymentIntent->amount / 100,
+                'comision' => 0,
+                'metodo_pago' => 'tarjeta',
+                'referencia_pago' => $paymentIntent->id,
+                'stripe_payment_intent' => $paymentIntent->id,
+                'stripe_status' => $paymentIntent->status,
+                'status' => 1,
+                'fecha_movimiento' => now(),
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            // Guardar detalles
+            foreach ($productos as $producto) {
+                DB::table('detalle_movimientos')->insert([
+                    'idmovimiento' => $movimiento,
+                    'idproducto' => $producto['idproducto'],
+                    'cantidad' => $producto['cantidad'],
+                    'precio_unitario' => $producto['precio'],
+                    'subtotal' => $producto['subtotal'],
+                    'status' => 1,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+            }
+
+            return [
+                'status' => 'succeeded',
+                'movimiento_id' => $movimiento
+            ];
+        });
+
+        return response()->json($resultado);
+
+    } catch (\Throwable $e) {
+        return response()->json([
+            'message' => 'Error al guardar la transacción QR.',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
 
 }
