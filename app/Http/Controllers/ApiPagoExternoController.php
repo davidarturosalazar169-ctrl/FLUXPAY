@@ -172,4 +172,39 @@ class ApiPagoExternoController extends Controller
         ], 500);
     }
 }
+public function consultarEstado($id)
+{
+    $apiKey = request()->header('X-API-KEY');
+
+    $clave = ApiKeyNegocio::where(
+        'api_key_hash',
+        hash('sha256', $apiKey ?? '')
+    )->where('activa', true)->first();
+
+    if (!$clave) {
+        return response()->json([
+            'success' => false,
+            'mensaje' => 'API Key inválida'
+        ], 401);
+    }
+
+    $pedido = PedidoApiKey::where('id', $id)
+        ->where('api_key_negocio_id', $clave->id)
+        ->first();
+
+    if (!$pedido) {
+        return response()->json([
+            'success' => false,
+            'mensaje' => 'Pedido no encontrado'
+        ], 404);
+    }
+
+    return response()->json([
+        'success' => true,
+        'pedido_id' => $pedido->id,
+        'referencia_externa' => $pedido->referencia_externa,
+        'monto' => $pedido->monto,
+        'status' => $pedido->status
+    ]);
+}
 }

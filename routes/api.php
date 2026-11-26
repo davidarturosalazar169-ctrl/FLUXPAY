@@ -272,3 +272,7 @@ Route::post(
     '/integraciones/confirmar-pago',
     [ApiPagoExternoController::class, 'confirmarPago']
 );
+Route::get(
+    '/integraciones/estado-pedido/{id}',
+    [ApiPagoExternoController::class, 'consultarEstado']
+);
