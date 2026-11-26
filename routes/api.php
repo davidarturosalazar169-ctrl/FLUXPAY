@@ -260,3 +260,4 @@ use App\Http\Controllers\ApiQrController;
 
 Route::post('/integraciones/crear-qr', [ApiQrController::class, 'crear']);
 Route::get('/integraciones/prueba-qr', [ApiQrController::class, 'prueba']);
+Route::post('/integraciones/solicitar-qr', [ApiQrController::class, 'recibirSolicitud']);

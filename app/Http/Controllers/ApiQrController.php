@@ -13,4 +13,18 @@ class ApiQrController extends Controller
             'mensaje' => 'API QR de ImpulsaPay funcionando correctamente'
         ]);
     }
+
+    public function recibirSolicitud(Request $request)
+    {
+        $datos = $request->validate([
+            'monto' => 'required|numeric|min:1',
+            'referencia_externa' => 'required|string|max:100',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'mensaje' => 'Solicitud recibida correctamente',
+            'datos_recibidos' => $datos,
+        ]);
+    }
 }
