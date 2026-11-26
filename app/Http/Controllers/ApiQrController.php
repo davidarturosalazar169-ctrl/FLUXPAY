@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PedidoApiKey;
+use App\Models\ApiKeyNegocio;   
 use Illuminate\Support\Facades\DB;
 
 class ApiQrController extends Controller
@@ -30,17 +31,48 @@ public function recibirSolicitud(Request $request)
     ]);
 }
 
+
 public function crear(Request $request)
 {
+    // Validar los datos recibidos
     $datos = $request->validate([
         'monto' => 'required|numeric|min:1',
         'referencia_externa' => 'required|string|max:100',
-        'negocio_externo_id' => 'required|string|max:100',
     ]);
 
+    // Obtener API Key enviada en los encabezados
+    $apiKey = $request->header('X-API-KEY');
+
+    if (!$apiKey) {
+        return response()->json([
+            'success' => false,
+            'mensaje' => 'API Key no proporcionada'
+        ], 401);
+    }
+
+    // Buscar la API Key mediante su hash
+    $apiKeyHash = hash('sha256', $apiKey);
+
+    $clave = ApiKeyNegocio::where('api_key_hash', $apiKeyHash)
+        ->where('activa', true)
+        ->first();
+
+    if (!$clave) {
+        return response()->json([
+            'success' => false,
+            'mensaje' => 'API Key inválida o revocada'
+        ], 401);
+    }
+
+    // Actualizar último uso
+    $clave->update([
+        'ultimo_uso' => now()
+    ]);
+
+    // Crear pedido externo
     $pedido = PedidoApiKey::create([
-        'api_key_negocio_id' => 1,
-        'negocio_externo_id' => $datos['negocio_externo_id'],
+        'api_key_negocio_id' => $clave->id,
+        'negocio_externo_id' => $clave->negocio_externo_id,
         'referencia_externa' => $datos['referencia_externa'],
         'monto' => $datos['monto'],
         'status' => 'pendiente',
@@ -55,6 +87,5 @@ public function crear(Request $request)
         'status' => $pedido->status,
     ], 201);
 }
-
 
 }
