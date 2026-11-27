@@ -81,9 +81,11 @@ class ApiPagoExternoController extends Controller
                 'mensaje' => 'Pago generado correctamente',
                 'pedido_id' => $pedido->id,
                 'monto' => $pedido->monto,
-                'client_secret' => $paymentIntent->client_secret,
-                'payment_intent_id' => $paymentIntent->id,
-                'status' => $paymentIntent->status,
+'client_secret' => $paymentIntent->client_secret,
+'payment_intent_id' => $paymentIntent->id,
+'checkout_url' => rtrim(env('FRONTEND_URL'), '/') .
+    '/pagar-pedido-externo?pedido_id=' . $pedido->id,
+'status' => $paymentIntent->status,
             ]);
 
         } catch (\Throwable $e) {
@@ -94,36 +96,14 @@ class ApiPagoExternoController extends Controller
             ], 500);
         }
     }
-    public function confirmarPago(Request $request)
+
+public function confirmarPago(Request $request)
 {
     $datos = $request->validate([
         'pedido_id' => 'required|integer',
     ]);
 
-    $apiKey = $request->header('X-API-KEY');
-
-    if (!$apiKey) {
-        return response()->json([
-            'success' => false,
-            'mensaje' => 'API Key no proporcionada'
-        ], 401);
-    }
-
-    $clave = ApiKeyNegocio::where(
-        'api_key_hash',
-        hash('sha256', $apiKey)
-    )->where('activa', true)->first();
-
-    if (!$clave) {
-        return response()->json([
-            'success' => false,
-            'mensaje' => 'API Key inválida o revocada'
-        ], 401);
-    }
-
-    $pedido = PedidoApiKey::where('id', $datos['pedido_id'])
-        ->where('api_key_negocio_id', $clave->id)
-        ->first();
+    $pedido = PedidoApiKey::find($datos['pedido_id']);
 
     if (!$pedido || !$pedido->stripe_payment_intent) {
         return response()->json([
@@ -167,11 +147,11 @@ class ApiPagoExternoController extends Controller
     } catch (\Throwable $e) {
         return response()->json([
             'success' => false,
-            'mensaje' => 'Error al verificar el pago',
-            'error' => $e->getMessage()
+            'mensaje' => 'Error al verificar el pago'
         ], 500);
     }
 }
+
 public function consultarEstado($id)
 {
     $apiKey = request()->header('X-API-KEY');
@@ -207,4 +187,39 @@ public function consultarEstado($id)
         'status' => $pedido->status
     ]);
 }
+
+public function obtenerPago($id)
+{
+    $pedido = PedidoApiKey::find($id);
+
+    if (!$pedido || !$pedido->stripe_payment_intent) {
+        return response()->json([
+            'success' => false,
+            'mensaje' => 'Pago no encontrado'
+        ], 404);
+    }
+
+    try {
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        $paymentIntent = PaymentIntent::retrieve(
+            $pedido->stripe_payment_intent
+        );
+
+        return response()->json([
+            'success' => true,
+            'pedido_id' => $pedido->id,
+            'monto' => $pedido->monto,
+            'client_secret' => $paymentIntent->client_secret,
+            'status' => $paymentIntent->status
+        ]);
+
+    } catch (\Throwable $e) {
+        return response()->json([
+            'success' => false,
+            'mensaje' => 'Error al recuperar el pago'
+        ], 500);
+    }
+}
+
 }

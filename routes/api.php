@@ -276,3 +276,11 @@ Route::get(
     '/integraciones/estado-pedido/{id}',
     [ApiPagoExternoController::class, 'consultarEstado']
 );
+Route::get(
+    '/integraciones/obtener-pago/{id}',
+    [ApiPagoExternoController::class, 'obtenerPago']
+);
+
+use App\Http\Controllers\SupersetController;
+
+Route::get('/superset/guest-token', [SupersetController::class, 'guestToken']);
